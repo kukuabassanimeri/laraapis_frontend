@@ -1,0 +1,275 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+const AddProduct = () => {
+  //* Navigate State
+  const navigate = useNavigate();
+
+  //* State to hold product details
+  const [productDetails, setProductDetails] = useState({
+    name: "",
+    description: "",
+    price: "",
+  });
+
+  //* State to hold product image & local preview URL
+  const [productImage, setProductImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  //* Errors, success, and loading state
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  //* Helper function to generate a slug from the product name
+  const createSlug = (text) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
+  //* Handle text input change
+  const handleChange = (e) => {
+    setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
+  };
+
+  //* Handle image input change & generate preview
+  const handleProductImage = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProductImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  //* Handle Form Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const formData = new FormData();
+      formData.append("name", productDetails.name);
+      formData.append("slug", createSlug(productDetails.name));
+      formData.append("description", productDetails.description);
+      formData.append("price", productDetails.price);
+
+      if (productImage) {
+        formData.append("image", productImage);
+      }
+
+      const response = await fetch("http://127.0.0.1:8000/api/products", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("Product successfully added");
+
+        //* Reset form state
+        setProductDetails({ name: "", description: "", price: "" });
+        setProductImage(null);
+        setImagePreview(null);
+
+        //* Redirect to product list
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else {
+        setError(
+          data.message || "Failed to add product. Check validation errors.",
+        );
+      }
+    } catch (err) {
+      setError("Unable to connect to the server. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container min-vh-100 d-flex justify-content-center align-items-center py-5">
+      <div className="row w-100 justify-content-center">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-6">
+          <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
+            {/* Card Header Banner */}
+            <div className="card-header bg-primary text-white text-center py-4 border-0">
+              <h4 className="fw-bold mb-1">Add New Product</h4>
+              <p className="small mb-0 opacity-75">
+                Enter product details to list it in the catalog
+              </p>
+            </div>
+
+            <div className="card-body p-4 p-sm-5 bg-white">
+              {/* Alert Feedback */}
+              {success && (
+                <div
+                  className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4"
+                  role="alert"
+                >
+                  <span className="me-2">✓</span>
+                  <div>{success}</div>
+                </div>
+              )}
+
+              {error && (
+                <div
+                  className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4"
+                  role="alert"
+                >
+                  <span className="me-2">⚠️</span>
+                  <div>{error}</div>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                {/* Image Upload Field */}
+                <div className="mb-3">
+                  <label
+                    htmlFor="image"
+                    className="form-label small fw-semibold text-secondary"
+                  >
+                    Product Image
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept="image/*"
+                    required
+                    onChange={handleProductImage}
+                    className="form-control form-control-lg fs-6 py-2 rounded-3"
+                  />
+
+                  {/* Image Preview Box */}
+                  {imagePreview && (
+                    <div className="mt-3 text-center bg-light p-2 rounded-3 border">
+                      <img
+                        src={imagePreview}
+                        alt="Product Preview"
+                        className="img-fluid rounded-2"
+                        style={{ maxHeight: "150px", objectFit: "cover" }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Name */}
+                <div className="mb-3">
+                  <label
+                    htmlFor="name"
+                    className="form-label small fw-semibold text-secondary"
+                  >
+                    Product Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="e.g. Wireless Gaming Mouse"
+                    value={productDetails.name}
+                    onChange={handleChange}
+                    required
+                    className="form-control form-control-lg fs-6 py-2 rounded-3"
+                  />
+                </div>
+
+                {/* Product Description */}
+                <div className="mb-4">
+                  <label
+                    htmlFor="description"
+                    className="form-label small fw-semibold text-secondary"
+                  >
+                    Description
+                  </label>
+
+                  <textarea
+                    id="description"
+                    name="description"
+                    rows={4}
+                    placeholder="Describe key features, specs, condition..."
+                    value={productDetails.description}
+                    onChange={handleChange}
+                    required
+                    className="form-control fs-6 p-3 rounded-3"
+                  />
+                </div>
+
+                {/* Product Price */}
+                <div className="mb-3">
+                  <label
+                    htmlFor="price"
+                    className="form-label small fw-semibold text-secondary"
+                  >
+                    Price
+                  </label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3">
+                      Ksh
+                    </span>
+                    <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={productDetails.price}
+                      onChange={handleChange}
+                      required
+                      className="form-control form-control-lg fs-6 py-2 rounded-end-3"
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="d-grid gap-2">
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-lg rounded-3 fs-6 fw-semibold py-2 shadow-sm"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Saving Product...
+                      </>
+                    ) : (
+                      "Add Product"
+                    )}
+                  </button>
+
+                  <Link
+                    to="/"
+                    className="btn btn-light btn-lg rounded-3 fs-6 fw-semibold py-2 text-secondary border"
+                  >
+                    Cancel
+                  </Link>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddProduct;

@@ -1,0 +1,9 @@
+*{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+.navbar-Wrapper a {
+    padding-left: 30px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+}
