@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import DeleteProduct from "../components/DeleteProduct";
 
 const AdminDashboard = () => {
   //* State variable to hold products
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  //* Delete Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   //* Laravel public storage
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
@@ -45,6 +50,23 @@ const AdminDashboard = () => {
     fetchAllProducts();
   }, []);
 
+  //* Open Delete Modal for specific product
+  const handleOpenDeleteModal = (product) => {
+    setSelectedProduct(product);
+    setShowDeleteModal(true);
+  };
+
+  //* Close Delete Modal
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedProduct(null);
+  };
+
+  //* Callback when deletion succeeds
+  const handleDeleteSuccess = (deletedProductId) => {
+    setProducts((prev) => prev.filter((p) => p.id !== deletedProductId));
+  };
+
   return (
     <div className="container-fluid py-4 px-md-5 bg-light min-vh-100">
       {/* Header Section */}
@@ -59,7 +81,7 @@ const AdminDashboard = () => {
             to="/add"
             className="btn btn-primary fw-semibold rounded-3 px-3"
           >
-            <i class="fa-solid fa-plus"></i>{" "}
+            <i className="fa-solid fa-plus"></i>{" "}
           </Link>
         </div>
       </div>
@@ -179,7 +201,7 @@ const AdminDashboard = () => {
                           className="btn btn-sm btn-outline-info rounded-2"
                           title="View Details"
                         >
-                          <i class="fa-regular fa-eye"></i>
+                          <i className="fa-regular fa-eye"></i>
                         </Link>
 
                         {/* Edit Product */}
@@ -188,15 +210,16 @@ const AdminDashboard = () => {
                           className="btn btn-sm btn-outline-warning rounded-2"
                           title="Edit Product"
                         >
-                          <i class="fa-solid fa-pen-to-square"></i>
+                          <i className="fa-solid fa-pen-to-square"></i>
                         </Link>
 
                         {/* Delete Product */}
                         <button
                           className="btn btn-sm btn-outline-danger rounded-2"
                           title="Delete Product"
+                          onClick={() => handleOpenDeleteModal(product)}
                         >
-                          <i class="fa-solid fa-rectangle-xmark"></i>
+                          <i className="fa-solid fa-rectangle-xmark"></i>
                         </button>
                       </div>
                     </td>
@@ -207,6 +230,14 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteProduct
+        show={showDeleteModal}
+        handleClose={handleCloseDeleteModal}
+        product={selectedProduct}
+        onSuccess={handleDeleteSuccess}
+      />
     </div>
   );
 };

@@ -54,7 +54,7 @@ const Logout = () => {
           <span>Logging out...</span>
         </>
       ) : (
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <i className="fa-solid fa-arrow-right-from-bracket"></i>
       )}
     </Button>
   );
