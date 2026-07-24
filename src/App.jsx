@@ -1,27 +1,32 @@
 import "./App.css";
-import Products from "./components/Products";
-import Header from "./navbar/Header";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AddProduct from "./components/AddProduct";
 import UpdateProduct from "./components/UpdateProduct";
 import Register from "./authentication/Register";
 import Login from "./authentication/Login";
+import AdminDashboard from "./admindashboard/AdminDashboard";
+import ProtectedRoute from "./authentication/ProtectedRoute";
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Header />
+    <BrowserRouter>
+      <Routes>
+        {/* Public Authentication Routes */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        <Routes>
-          <Route path="/" element={<Products />} />
+        {/* Protected Inventory App Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<AdminDashboard />} />
           <Route path="/add" element={<AddProduct />} />
-          <Route path="/update" element={<UpdateProduct />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+          <Route path="/update/:id" element={<UpdateProduct />} />
+        </Route>
+
+        {/* Redirect to login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

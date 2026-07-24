@@ -86,7 +86,7 @@ const AddProduct = () => {
 
         //* Redirect to product list
         setTimeout(() => {
-          navigate("/");
+          navigate("/dashboard");
         }, 2000);
       } else {
         setError(
@@ -257,7 +257,7 @@ const AddProduct = () => {
                   </button>
 
                   <Link
-                    to="/"
+                    to="/dashboard"
                     className="btn btn-light btn-lg rounded-3 fs-6 fw-semibold py-2 text-secondary border"
                   >
                     Cancel

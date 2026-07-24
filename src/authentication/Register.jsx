@@ -61,7 +61,7 @@ const Register = () => {
           password_confirmation: "",
         });
 
-        // Redirect to login page after 2s
+        //* Redirect to login page after 2s
         setTimeout(() => {
           navigate("/login");
         }, 2000);
@@ -87,10 +87,13 @@ const Register = () => {
             {/* Header Banner */}
             <div className="card-header bg-primary text-white text-center py-2 border-0">
               <h4 className="fw-bold mb-1">Create Account</h4>
-              <p className="small mb-0 opacity-75">Join us to start shopping</p>
+              <p className="small mb-0 opacity-75">
+                Register to manage inventory
+              </p>
             </div>
 
             <div className="card-body p-4 p-sm-5 bg-white">
+
               {/* Alert Feedback */}
               {success && (
                 <div
@@ -107,7 +110,6 @@ const Register = () => {
                   className="alert alert-danger d-flex align-items-center rounded-3 p-2 mb-4"
                   role="alert"
                 >
-                  <span className="me-2">⚠️</span>
                   <div>{error}</div>
                 </div>
               )}
@@ -206,7 +208,7 @@ const Register = () => {
                         role="status"
                         aria-hidden="true"
                       ></span>
-                      Creating Account...
+                      Creating account...
                     </>
                   ) : (
                     "Register"

@@ -63,12 +63,14 @@ const Login = ({ onLoginSuccess }) => {
 
         //* Navigate after 2 seconds
         setTimeout(() => {
-          navigate("/");
+          navigate("/dashboard");
         }, 2000);
       } else {
-        setError(
-          data.message || "Login failed. Please check your credentials.",
-        );
+        setError(data.message);
+
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
       }
     } catch (err) {
       setError("Unable to connect to the server. Please try again.");
@@ -82,11 +84,12 @@ const Login = ({ onLoginSuccess }) => {
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
+
             {/* Header Banner */}
             <div className="card-header bg-primary text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Welcome Back</h4>
               <p className="small mb-0 opacity-75">
-                Sign in to continue shopping
+                Sign in to manage inventory
               </p>
             </div>
 
@@ -107,7 +110,6 @@ const Login = ({ onLoginSuccess }) => {
                   className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4"
                   role="alert"
                 >
-                  <span className="me-2">⚠️</span>
                   <div>{error}</div>
                 </div>
               )}
@@ -166,7 +168,7 @@ const Login = ({ onLoginSuccess }) => {
                         role="status"
                         aria-hidden="true"
                       ></span>
-                      Signing In...
+                      Signing in...
                     </>
                   ) : (
                     "Login"
