@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DeleteProduct from "../components/DeleteProduct";
+import SearchProduct from "../components/SearchProduct";
 
 const AdminDashboard = () => {
-  //* State variable to hold products
+  //* State variables
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -16,13 +18,19 @@ const AdminDashboard = () => {
   //* Laravel public storage
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
 
-  //* Fetch products
-  const fetchAllProducts = async () => {
+  //* Fetch or Search Products
+  const fetchProducts = async (query = "") => {
     setLoading(true);
+    setError("");
+
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://127.0.0.1:8000/api/products", {
+      const endpoint = query.trim()
+        ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
+        : "http://127.0.0.1:8000/api/products";
+
+      const response = await fetch(endpoint, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -46,9 +54,14 @@ const AdminDashboard = () => {
     }
   };
 
+  //* Debounce API call when typing in search input
   useEffect(() => {
-    fetchAllProducts();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchProducts(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
   //* Open Delete Modal for specific product
   const handleOpenDeleteModal = (product) => {
@@ -68,7 +81,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="container-fluid py-4 px-md-5 bg-light min-vh-100">
+    <div className="container-fluid py-4 px-3 px-md-5 bg-light min-vh-100">
       {/* Header Section */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 border-bottom pb-3 gap-3">
         <div>
@@ -76,12 +89,20 @@ const AdminDashboard = () => {
             Manage store, view products, or perform updates
           </p>
         </div>
-        <div>
+
+        {/* Search Input Field */}
+        <div className="d-flex align-items-center gap-5">
+          <SearchProduct
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+
           <Link
             to="/add"
-            className="btn btn-primary fw-semibold rounded-3 px-3"
+            className="btn btn-primary fw-semibold rounded-3 px-3 d-flex align-items-center gap-1"
+            title="Add New Product"
           >
-            <i className="fa-solid fa-plus"></i>{" "}
+            <i className="fa-solid fa-plus"></i>
           </Link>
         </div>
       </div>
@@ -108,7 +129,9 @@ const AdminDashboard = () => {
       {!loading && !error && products.length === 0 && (
         <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
           <p className="text-muted fs-5 mb-0">
-            No products found in the database.
+            {searchTerm
+              ? `No products found matching "${searchTerm}".`
+              : "No products found in the database."}
           </p>
         </div>
       )}
@@ -128,7 +151,9 @@ const AdminDashboard = () => {
                   </th>
                   <th scope="col">Name</th>
                   <th scope="col">Description</th>
-                  <th scope="col">Price</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Unit Price</th>
+                  <th scope="col">Total Price</th>
                   <th
                     scope="col"
                     className="text-center"
@@ -141,12 +166,9 @@ const AdminDashboard = () => {
               <tbody>
                 {products.map((product) => (
                   <tr key={product.id}>
-                    {/* ID */}
                     <td className="ps-3 fw-bold text-secondary">
                       #{product.id}
                     </td>
-
-                    {/* Image Thumbnail */}
                     <td>
                       {product.image ? (
                         <img
@@ -164,15 +186,11 @@ const AdminDashboard = () => {
                         </div>
                       )}
                     </td>
-
-                    {/* Product Name */}
                     <td>
                       <div className="fw-semibold text-dark">
                         {product.name}
                       </div>
                     </td>
-
-                    {/* Description */}
                     <td style={{ maxWidth: "300px" }}>
                       <div
                         className="text-muted small"
@@ -186,25 +204,17 @@ const AdminDashboard = () => {
                         {product.description || "No description provided."}
                       </div>
                     </td>
-
-                    {/* Price */}
                     <td className="fw-bold text-primary">
-                      Ksh {Number(product.price).toLocaleString()}.00
+                      {Number(product.quantity).toLocaleString()}
                     </td>
-
-                    {/* Action Controls */}
+                    <td className="fw-bold text-primary">
+                      Ksh {Number(product.unit_price).toLocaleString()}.00
+                    </td>
+                    <td className="fw-bold text-primary">
+                      Ksh {Number(product.total_price).toLocaleString()}.00
+                    </td>
                     <td>
                       <div className="d-flex justify-content-center gap-2">
-                        {/* View Product */}
-                        <Link
-                          to={`/product/${product.id}`}
-                          className="btn btn-sm btn-outline-info rounded-2"
-                          title="View Details"
-                        >
-                          <i className="fa-regular fa-eye"></i>
-                        </Link>
-
-                        {/* Edit Product */}
                         <Link
                           to={`/update/${product.id}`}
                           className="btn btn-sm btn-outline-warning rounded-2"
@@ -213,7 +223,6 @@ const AdminDashboard = () => {
                           <i className="fa-solid fa-pen-to-square"></i>
                         </Link>
 
-                        {/* Delete Product */}
                         <button
                           className="btn btn-sm btn-outline-danger rounded-2"
                           title="Delete Product"

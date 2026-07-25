@@ -9,7 +9,8 @@ const AddProduct = () => {
   const [productDetails, setProductDetails] = useState({
     name: "",
     description: "",
-    price: "",
+    quantity: "",
+    unit_price: "",
   });
 
   //* State to hold product image & local preview URL
@@ -30,6 +31,12 @@ const AddProduct = () => {
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
   };
+
+  //* Calculate dynamic total price for the read-only input UI
+  const calculatedTotal = (
+    (parseFloat(productDetails.quantity) || 0) *
+    (parseFloat(productDetails.unit_price) || 0)
+  ).toFixed(2);
 
   //* Handle text input change
   const handleChange = (e) => {
@@ -59,7 +66,8 @@ const AddProduct = () => {
       formData.append("name", productDetails.name);
       formData.append("slug", createSlug(productDetails.name));
       formData.append("description", productDetails.description);
-      formData.append("price", productDetails.price);
+      formData.append("quantity", productDetails.quantity);
+      formData.append("unit_price", productDetails.unit_price);
 
       if (productImage) {
         formData.append("image", productImage);
@@ -80,7 +88,12 @@ const AddProduct = () => {
         setSuccess("Product successfully added");
 
         //* Reset form state
-        setProductDetails({ name: "", description: "", price: "" });
+        setProductDetails({
+          name: "",
+          description: "",
+          quantity: "",
+          unit_price: "",
+        });
         setProductImage(null);
         setImagePreview(null);
 
@@ -110,7 +123,7 @@ const AddProduct = () => {
             <div className="card-header bg-primary text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Add New Product</h4>
               <p className="small mb-0 opacity-75">
-                Enter product details to list it in the catalog
+                Enter product details to list it in the inventory
               </p>
             </div>
 
@@ -131,7 +144,6 @@ const AddProduct = () => {
                   className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4"
                   role="alert"
                 >
-                  <span className="me-2">⚠️</span>
                   <div>{error}</div>
                 </div>
               )}
@@ -189,7 +201,7 @@ const AddProduct = () => {
                 </div>
 
                 {/* Product Description */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <label
                     htmlFor="description"
                     className="form-label small fw-semibold text-secondary"
@@ -200,7 +212,7 @@ const AddProduct = () => {
                   <textarea
                     id="description"
                     name="description"
-                    rows={4}
+                    rows={3}
                     placeholder="Describe key features, specs, condition..."
                     value={productDetails.description}
                     onChange={handleChange}
@@ -209,29 +221,54 @@ const AddProduct = () => {
                   />
                 </div>
 
-                {/* Product Price */}
-                <div className="mb-3">
-                  <label
-                    htmlFor="price"
-                    className="form-label small fw-semibold text-secondary"
-                  >
-                    Price
-                  </label>
-                  <div className="input-group">
-                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3">
-                      Ksh
-                    </span>
+                {/* Quantity & Unit Price Row */}
+                <div className="row g-3 mb-3">
+                  {/* Quantity */}
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="quantity"
+                      className="form-label small fw-semibold text-secondary"
+                    >
+                      Quantity
+                    </label>
                     <input
                       type="number"
-                      id="price"
-                      name="price"
-                      step="0.01"
-                      placeholder="0.00"
-                      value={productDetails.price}
+                      id="quantity"
+                      name="quantity"
+                      min="0"
+                      placeholder="0"
+                      value={productDetails.quantity}
                       onChange={handleChange}
                       required
-                      className="form-control form-control-lg fs-6 py-2 rounded-end-3"
+                      className="form-control form-control-lg fs-6 py-2 rounded-3"
                     />
+                  </div>
+
+                  {/* Unit Price */}
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="unit_price"
+                      className="form-label small fw-semibold text-secondary"
+                    >
+                      Unit Price
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 fs-6">
+                        Ksh
+                      </span>
+                      <input
+                        type="number"
+                        id="unit_price"
+                        name="unit_price"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        value={productDetails.unit_price}
+                        onChange={handleChange}
+                        required
+                        className="form-control form-control-lg fs-6 py-2 rounded-end-3"
+                      />
+                    </div>
                   </div>
                 </div>
 

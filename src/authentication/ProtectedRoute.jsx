@@ -17,7 +17,7 @@ const ProtectedRoute = () => {
     <>
       {/* Top Navigation Header */}
       <Navbar bg="dark" variant="dark" className="shadow-sm py-2">
-        <Container className="d-flex justify-content-between align-items-center">
+        <Container fluid className="px-3 px-md-5 d-flex justify-content-between align-items-center">
           <Navbar.Brand
             as={Link}
             to="/dashboard"
