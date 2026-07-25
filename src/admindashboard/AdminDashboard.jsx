@@ -11,6 +11,13 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  //* Pagination State
+  const [pagination, setPagination] = useState({
+    prevPageUrl: null,
+    nextPageUrl: null,
+    currentPage: 1,
+  });
+
   //* Delete Modal State
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -19,16 +26,21 @@ const AdminDashboard = () => {
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
 
   //* Fetch or Search Products
-  const fetchProducts = async (query = "") => {
+  const fetchProducts = async (query = "", fetchUrl = null) => {
     setLoading(true);
     setError("");
 
     try {
       const token = localStorage.getItem("token");
 
-      const endpoint = query.trim()
-        ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
-        : "http://127.0.0.1:8000/api/products";
+      // Determine target endpoint
+      let endpoint = fetchUrl;
+
+      if (!endpoint) {
+        endpoint = query.trim()
+          ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
+          : "http://127.0.0.1:8000/api/products";
+      }
 
       const response = await fetch(endpoint, {
         method: "GET",
@@ -42,7 +54,21 @@ const AdminDashboard = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setProducts(data);
+        if (data.data) {
+          setProducts(data.data);
+          setPagination({
+            prevPageUrl: data.prev_page_url,
+            nextPageUrl: data.next_page_url,
+            currentPage: data.current_page || 1,
+          });
+        } else {
+          setProducts(Array.isArray(data) ? data : []);
+          setPagination({
+            prevPageUrl: null,
+            nextPageUrl: null,
+            currentPage: 1,
+          });
+        }
       } else {
         setError(data.message || "Failed to retrieve products.");
       }
@@ -62,6 +88,13 @@ const AdminDashboard = () => {
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
+
+  //* Handle Previous / Next button click
+  const handlePageChange = (url) => {
+    if (url) {
+      fetchProducts(searchTerm, url);
+    }
+  };
 
   //* Open Delete Modal for specific product
   const handleOpenDeleteModal = (product) => {
@@ -91,7 +124,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Search Input Field */}
-        <div className="d-flex align-items-center gap-5">
+        <div className="d-flex align-items-center gap-3">
           <SearchProduct
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -236,6 +269,32 @@ const AdminDashboard = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Footer Navigation Controls */}
+          <div className="card-footer bg-white py-3 px-4 d-flex justify-content-between align-items-center border-top">
+            <span className="text-muted small">
+              Page{" "}
+              <strong className="text-dark">{pagination.currentPage}</strong>
+            </span>
+
+            <div className="d-flex gap-2">
+              <button
+                className="btn btn-sm btn-outline-secondary rounded-2 px-3"
+                onClick={() => handlePageChange(pagination.prevPageUrl)}
+                disabled={!pagination.prevPageUrl}
+              >
+                <i className="fa-solid fa-chevron-left me-1"></i> Previous
+              </button>
+
+              <button
+                className="btn btn-sm btn-outline-primary rounded-2 px-3"
+                onClick={() => handlePageChange(pagination.nextPageUrl)}
+                disabled={!pagination.nextPageUrl}
+              >
+                Next <i className="fa-solid fa-chevron-right ms-1"></i>
+              </button>
+            </div>
           </div>
         </div>
       )}
