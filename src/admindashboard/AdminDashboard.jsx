@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DeleteProduct from "../components/DeleteProduct";
 import SearchProduct from "../components/SearchProduct";
+import EditProduct from "../components/EditProduct";
 
 const AdminDashboard = () => {
   //* State variables
@@ -22,6 +23,10 @@ const AdminDashboard = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  //* Edit Modal State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editProductData, setEditProductData] = useState(null);
+
   //* Laravel public storage
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
 
@@ -31,14 +36,16 @@ const AdminDashboard = () => {
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token") || localStorage.getItem("token");
 
-      // Determine target endpoint
       let endpoint = fetchUrl;
 
       if (!endpoint) {
         endpoint = query.trim()
-          ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
+          ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(
+              query.trim()
+            )}`
           : "http://127.0.0.1:8000/api/products";
       }
 
@@ -96,21 +103,37 @@ const AdminDashboard = () => {
     }
   };
 
-  //* Open Delete Modal for specific product
+  //* Delete Modal Handlers
   const handleOpenDeleteModal = (product) => {
     setSelectedProduct(product);
     setShowDeleteModal(true);
   };
 
-  //* Close Delete Modal
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
     setSelectedProduct(null);
   };
 
-  //* Callback when deletion succeeds
   const handleDeleteSuccess = (deletedProductId) => {
     setProducts((prev) => prev.filter((p) => p.id !== deletedProductId));
+  };
+
+  //* Edit Modal Handlers
+  const handleOpenEditModal = (product) => {
+    setEditProductData(product);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditProductData(null);
+  };
+
+  const handleEditSuccess = (updatedProduct) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+    );
+    handleCloseEditModal();
   };
 
   return (
@@ -248,13 +271,13 @@ const AdminDashboard = () => {
                     </td>
                     <td>
                       <div className="d-flex justify-content-center gap-2">
-                        <Link
-                          to={`/update/${product.id}`}
+                        <button
                           className="btn btn-sm btn-outline-warning rounded-2"
                           title="Edit Product"
+                          onClick={() => handleOpenEditModal(product)}
                         >
                           <i className="fa-solid fa-pen-to-square"></i>
-                        </Link>
+                        </button>
 
                         <button
                           className="btn btn-sm btn-outline-danger rounded-2"
@@ -305,6 +328,14 @@ const AdminDashboard = () => {
         handleClose={handleCloseDeleteModal}
         product={selectedProduct}
         onSuccess={handleDeleteSuccess}
+      />
+
+      {/* Edit Product Modal */}
+      <EditProduct
+        show={showEditModal}
+        handleClose={handleCloseEditModal}
+        product={editProductData}
+        onSuccess={handleEditSuccess}
       />
     </div>
   );

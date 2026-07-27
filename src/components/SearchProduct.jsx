@@ -1,5 +1,3 @@
-import React from "react";
-
 const SearchProduct = ({ searchTerm, setSearchTerm }) => {
   return (
     <div className="position-relative" style={{ minWidth: "250px" }}>

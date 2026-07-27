@@ -74,6 +74,10 @@ const Login = ({ onLoginSuccess }) => {
       }
     } catch (err) {
       setError("Unable to connect to the server. Please try again.");
+
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +88,6 @@ const Login = ({ onLoginSuccess }) => {
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-
             {/* Header Banner */}
             <div className="card-header bg-primary text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Welcome Back</h4>
