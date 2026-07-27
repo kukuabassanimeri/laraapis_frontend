@@ -10,11 +10,14 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
   const [unitPrice, setUnitPrice] = useState("");
   const [image, setImage] = useState(null);
 
+  //* Success & Error message states
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
+
   //* UI State
   const [previewImage, setPreviewImage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] = useState({});
 
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
 
@@ -27,6 +30,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
       setUnitPrice(product.unit_price || "");
       setImage(null);
       setError("");
+      setSuccess(null);
       setValidationErrors({});
 
       if (product.image) {
@@ -49,10 +53,11 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
     e.preventDefault();
     setSubmitting(true);
     setError("");
+    setSuccess(null);
     setValidationErrors({});
 
     const token =
-      localStorage.getItem("token") || localStorage.getItem("token");
+      sessionStorage.getItem("token") || localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("name", name);
@@ -77,16 +82,23 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-        },
+        }
       );
 
       const data = await response.json();
 
       if (response.ok) {
-        onSuccess(data); //* Update product list in parent
+
+        //* Show success alert inside the modal
+        setSuccess("Product updated successfully!");
+
+        setTimeout(() => {
+          setSuccess(null);
+          onSuccess(data);
+        }, 1500);
       } else if (response.status === 422) {
         setValidationErrors(data.errors || {});
-        setError("Please check the form for errors.");
+        setError("Please check the form for validation errors.");
       } else {
         setError(data.message || "Failed to update product.");
       }
@@ -121,7 +133,10 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
           </div>
 
           <div className="modal-body p-4">
+          
+            {/* Success and Error Alerts */}
             {error && <div className="alert alert-danger">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
 
             <form onSubmit={handleSubmit}>
               <div className="row mb-3">
@@ -199,9 +214,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                   )}
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    Unit Price
-                  </label>
+                  <label className="form-label fw-semibold">Unit Price</label>
                   <input
                     type="number"
                     min="0"
@@ -222,9 +235,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  Product Image
-                </label>
+                <label className="form-label fw-semibold">Product Image</label>
                 <input
                   type="file"
                   className={`form-control ${
