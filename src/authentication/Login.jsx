@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import SocialLogin from "./SocialLogin";
 
 const Login = ({ onLoginSuccess }) => {
   //* State to hold user login details
@@ -89,7 +90,7 @@ const Login = ({ onLoginSuccess }) => {
         <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
             {/* Header Banner */}
-            <div className="card-header bg-primary text-white text-center py-4 border-0">
+            <div className="card-header bg-dark text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Welcome Back</h4>
               <p className="small mb-0 opacity-75">
                 Sign in to manage inventory
@@ -161,7 +162,7 @@ const Login = ({ onLoginSuccess }) => {
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="btn btn-primary btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
+                  className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -178,6 +179,8 @@ const Login = ({ onLoginSuccess }) => {
                   )}
                 </button>
               </form>
+
+              <SocialLogin />
             </div>
 
             {/* Footer with Navigation Link */}

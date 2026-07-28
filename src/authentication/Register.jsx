@@ -85,7 +85,7 @@ const Register = () => {
         <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
             {/* Header Banner */}
-            <div className="card-header bg-primary text-white text-center py-2 border-0">
+            <div className="card-header bg-dark text-white text-center py-2 border-0">
               <h4 className="fw-bold mb-1">Create Account</h4>
               <p className="small mb-0 opacity-75">
                 Register to manage inventory
@@ -198,7 +198,7 @@ const Register = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="btn btn-primary btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
+                  className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
