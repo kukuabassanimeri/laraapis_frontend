@@ -6,25 +6,29 @@ import Register from "./authentication/Register";
 import Login from "./authentication/Login";
 import AdminDashboard from "./admindashboard/AdminDashboard";
 import ProtectedRoute from "./authentication/ProtectedRoute";
+import AllProduct from "./customer/AllProduct";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Authentication Routes */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Customer Public Landing Page */}
+        <Route path="/product" element={<AllProduct />}/>
+        <Route path="/" element={<Navigate to="/product" replace />} />
+
+        {/* Public Admin Authentication Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Inventory App Routes */}
+        {/* Protected Admin Inventory App Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<AdminDashboard />} />
           <Route path="/add" element={<AddProduct />} />
           <Route path="/update/:id" element={<UpdateProduct />} />
         </Route>
 
-        {/* Redirect to login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Redirect Unkown Routes Back to Customer Landing Page */}
+        <Route path="*" element={<Navigate to="/product" replace />} />
       </Routes>
     </BrowserRouter>
   );

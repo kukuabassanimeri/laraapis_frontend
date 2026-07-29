@@ -4,7 +4,7 @@ const SearchProduct = ({ searchTerm, setSearchTerm }) => {
       <input
         type="text"
         className="form-control form-control-sm pe-4 ps-4 rounded-3"
-        placeholder="Search products by name..."
+        placeholder="Search product by name..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
