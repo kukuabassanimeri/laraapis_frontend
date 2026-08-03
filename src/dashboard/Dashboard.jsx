@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DeleteProduct from "../components/DeleteProduct";
-import SearchProduct from "../components/SearchProduct";
-import EditProduct from "../components/EditProduct";
+import DeleteProduct from "./DeleteProduct";
+import SearchProduct from "./SearchProduct";
+import EditProduct from "./EditProduct";
 import Logout from "../authentication/Logout";
 import { useStateContext } from "../context/ContextProvider";
 

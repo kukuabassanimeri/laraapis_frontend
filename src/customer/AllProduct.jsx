@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import SearchProduct from "../components/SearchProduct";
+import SearchProduct from "../dashboard/SearchProduct";
 import AddToCart from "./AddToCart";
 
 const AllProduct = () => {
@@ -158,7 +158,8 @@ const AllProduct = () => {
                         <img
                           src={imageUrl}
                           alt={product.name}
-                          className="w-100 h-100 object-fit-cover hover-image" role="button"
+                          className="w-100 h-100 object-fit-cover hover-image"
+                          role="button"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src =

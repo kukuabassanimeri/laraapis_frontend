@@ -9,11 +9,11 @@ import Cart from "../customer/Cart";
 import Register from "../authentication/Register";
 import Login from "../authentication/Login";
 import Dashboard from "../dashboard/Dashboard";
-import AddProduct from "../components/AddProduct";
-import DeleteProduct from "../components/DeleteProduct";
-import EditProduct from "../components/EditProduct";
-import SearchProduct from "../components/SearchProduct";
-import NotFound from "../authentication/NotFound";
+import AddProduct from "../dashboard/AddProduct";
+import DeleteProduct from "../dashboard/DeleteProduct";
+import EditProduct from "../dashboard/EditProduct";
+import SearchProduct from "../dashboard/SearchProduct";
+import NotFound from "../components/NotFound";
 
 const Router = createBrowserRouter([
   //* Routes accessible by guests & logged-in users
