@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SearchProduct from "../dashboard/SearchProduct";
 import AddToCart from "./AddToCart";
+import Cart from "./Cart"; // Import Cart component
 import Footer from "../components/Footer";
 
 const AllProduct = () => {
@@ -11,8 +12,23 @@ const AllProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  //* Add to cart state variable
+  //* Cart state initialized from localStorage
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("shopping_cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  //* Modal/View states
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showCartView, setShowCartView] = useState(false);
+
+  //* Calculate total count of items in cart
+  const totalCartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  //* Callback when cart updates in AddToCart or Cart view
+  const handleCartUpdate = (updatedCart) => {
+    setCart(updatedCart);
+  };
 
   //* Laravel public storage URL base
   const STORAGE_URL = "http://127.0.0.1:8000/storage";
@@ -27,13 +43,12 @@ const AllProduct = () => {
     return `${STORAGE_URL}/${cleanPath}`;
   };
 
-  //* Fetch or Search Products from Backend API (Public - No Token Needed)
+  //* Fetch or Search Products from Backend API
   const fetchProducts = async (query = "") => {
     setLoading(true);
     setError("");
 
     try {
-      //* Public search vs public catalog list
       const endpoint = query.trim()
         ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
         : "http://127.0.0.1:8000/api/products";
@@ -65,7 +80,6 @@ const AllProduct = () => {
     }
   };
 
-  //* Debounce API call when user types in search input
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchProducts(searchTerm);
@@ -96,12 +110,18 @@ const AllProduct = () => {
               setSearchTerm={setSearchTerm}
             />
 
-            {/* Cart Icon Placeholder */}
-            <button className="btn btn-light position-relative border-0 bg-transparent fs-5">
-              <i
-                className="fa-solid fa-cart-shopping text-dark"
-                role="button"
-              ></i>
+            {/* Cart Icon with Dynamic Badge */}
+            <button
+              className="btn btn-light position-relative border-0 bg-transparent fs-5 p-2"
+              onClick={() => setShowCartView(true)}
+              title="Open Cart"
+            >
+              <i className="fa-solid fa-cart-shopping text-dark"></i>
+              {totalCartCount > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-6">
+                  {totalCartCount}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -109,20 +129,14 @@ const AllProduct = () => {
         {/* Loading Spinner */}
         {loading && (
           <div className="d-flex justify-content-center align-items-center py-5">
-            <div
-              className="spinner-border text-primary me-2"
-              role="status"
-            ></div>
+            <div className="spinner-border text-primary me-2" role="status"></div>
             <span className="text-muted">Loading products...</span>
           </div>
         )}
 
         {/* Error Alert */}
         {error && (
-          <div
-            className="alert alert-danger d-flex align-items-center"
-            role="alert"
-          >
+          <div className="alert alert-danger d-flex align-items-center" role="alert">
             <div>{error}</div>
           </div>
         )}
@@ -145,12 +159,8 @@ const AllProduct = () => {
               const imageUrl = getImageUrl(product.image);
 
               return (
-                <div
-                  key={product.id}
-                  className="col d-flex align-items-stretch"
-                >
+                <div key={product.id} className="col d-flex align-items-stretch">
                   <div className="card h-100 w-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column">
-                    {/* Product Image Container */}
                     <div
                       className="position-relative bg-light d-flex align-items-center justify-content-center overflow-hidden"
                       style={{ height: "180px" }}
@@ -175,7 +185,6 @@ const AllProduct = () => {
                       )}
                     </div>
 
-                    {/* Card Body */}
                     <div className="card-body d-flex flex-column justify-content-between p-3">
                       <div>
                         <h6
@@ -199,7 +208,6 @@ const AllProduct = () => {
                         </p>
                       </div>
 
-                      {/* Footer with Price and Action Button */}
                       <div className="pt-2 border-top d-flex align-items-center justify-content-between">
                         <div>
                           <span
@@ -209,8 +217,7 @@ const AllProduct = () => {
                             Price
                           </span>
                           <span className="fw-bold text-success fs-6">
-                            Ksh{" "}
-                            {Number(product.unit_price || 0).toLocaleString()}
+                            Ksh {Number(product.unit_price || 0).toLocaleString()}
                           </span>
                         </div>
                         <button
@@ -228,11 +235,21 @@ const AllProduct = () => {
           </div>
         )}
 
-        {/* AddToCart Modal / Drawer */}
+        {/* AddToCart Modal */}
         {selectedProduct && (
           <AddToCart
             product={selectedProduct}
             onClose={() => setSelectedProduct(null)}
+            onCartUpdate={handleCartUpdate}
+          />
+        )}
+
+        {/* Cart View Modal */}
+        {showCartView && (
+          <Cart
+            cartItems={cart}
+            onClose={() => setShowCartView(false)}
+            onCartUpdate={handleCartUpdate}
           />
         )}
       </main>
