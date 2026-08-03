@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SearchProduct from "../dashboard/SearchProduct";
 import AddToCart from "./AddToCart";
+import Footer from "../components/Footer";
 
 const AllProduct = () => {
   //* State variables
@@ -235,6 +236,8 @@ const AllProduct = () => {
           />
         )}
       </main>
+
+      <Footer />
     </div>
   );
 };

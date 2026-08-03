@@ -308,16 +308,8 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
               {/* Action Buttons */}
               <div className="modal-footer px-0 pb-0 pt-3 border-top d-flex justify-content-end gap-2">
                 <button
-                  type="button"
-                  className="btn btn-outline-secondary rounded-2"
-                  onClick={handleClose}
-                  disabled={submitting}
-                >
-                  Cancel
-                </button>
-                <button
                   type="submit"
-                  className="btn btn-primary rounded-2 fw-semibold px-4"
+                  className="btn btn-outline-dark rounded-2 fw-semibold px-4 w-100"
                   disabled={submitting}
                 >
                   {submitting ? (

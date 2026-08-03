@@ -74,7 +74,7 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
             />
           ) : (
             <div
-              className="rounded bg-secondary text-white d-flex align-items-center justify-content-center me-3 fw-bold"
+              className="rounded text-white d-flex align-items-center justify-content-center me-3 fw-bold"
               style={{ width: "50px", height: "50px" }}
             >
               #
@@ -89,10 +89,9 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
 
       <Modal.Footer className="border-0 pt-0 d-flex gap-2">
         <Button
-          variant="danger"
           onClick={handleDelete}
           disabled={loading}
-          className="d-flex align-items-center justify-content-center gap-2 flex-grow-1 fw-semibold"
+          className="d-flex align-items-center btn btn-outline-danger justify-content-center gap-2 flex-grow-1 fw-semibold"
         >
           {loading ? (
             <>

@@ -6,6 +6,7 @@ import SearchProduct from "./SearchProduct";
 import EditProduct from "./EditProduct";
 import Logout from "../authentication/Logout";
 import { useStateContext } from "../context/ContextProvider";
+import Sidebar from "../sidebar/Sidebar";
 
 const Dashboard = () => {
   //* Context state for authentication
@@ -139,211 +140,212 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container-fluid py-4 px-3 px-md-5 bg-light min-vh-100">
-      {/* Header Section */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 border-bottom pb-3 gap-3">
-        <div>
-          <p className="text-muted small mb-0">
-            Manage store, view products, or perform updates
-          </p>
-        </div>
+    <div className="d-flex min-vh-100 bg-light">
+      <Sidebar />
 
-        {/* Search Input Field & Actions */}
-        <div className="d-flex align-items-center gap-3">
-          <SearchProduct
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          />
-
-          <Link
-            to="/add"
-            className="btn btn-primary fw-semibold rounded-3 px-3 d-flex align-items-center gap-1"
-            title="Add New Product"
-          >
-            <i className="fa-solid fa-plus"></i>
-          </Link>
-        </div>
-
-        {/* Logout section */}
-        <div>
-          <Logout />
-        </div>
-      </div>
-
-      {/* Loading Spinner */}
-      {loading && (
-        <div className="d-flex justify-content-center align-items-center py-5">
-          <div className="spinner-border text-primary me-2" role="status"></div>
-          <span className="text-muted">Loading product inventory...</span>
-        </div>
-      )}
-
-      {/* Error Alert */}
-      {error && (
-        <div
-          className="alert alert-danger d-flex align-items-center"
-          role="alert"
-        >
-          <div>{error}</div>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!loading && !error && products.length === 0 && (
-        <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
-          <p className="text-muted fs-5 mb-0">
-            {searchTerm
-              ? `No products found matching "${searchTerm}".`
-              : "No products found in the database."}
-          </p>
-        </div>
-      )}
-
-      {/* Product Management Table */}
-      {!loading && !error && products.length > 0 && (
-        <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="table-dark">
-                <tr>
-                  <th scope="col" className="ps-3" style={{ width: "80px" }}>
-                    ID
-                  </th>
-                  <th scope="col" style={{ width: "100px" }}>
-                    Image
-                  </th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Description</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Unit Price</th>
-                  <th scope="col">Total Price</th>
-                  <th
-                    scope="col"
-                    className="text-center"
-                    style={{ width: "200px" }}
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <td className="ps-3 fw-bold text-secondary">
-                      #{product.id}
-                    </td>
-                    <td>
-                      {product.image ? (
-                        <img
-                          src={`${STORAGE_URL}${product.image}`}
-                          alt={product.name}
-                          className="rounded border object-fit-cover"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                      ) : (
-                        <div
-                          className="bg-light rounded border d-flex align-items-center justify-content-center text-muted small"
-                          style={{ width: "50px", height: "50px" }}
-                        >
-                          📷
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <div className="fw-semibold text-dark">
-                        {product.name}
-                      </div>
-                    </td>
-                    <td style={{ maxWidth: "300px" }}>
-                      <div
-                        className="text-muted small"
-                        style={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: "2",
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                        }}
-                      >
-                        {product.description || "No description provided."}
-                      </div>
-                    </td>
-                    <td className="fw-bold text-primary">
-                      {Number(product.quantity).toLocaleString()}
-                    </td>
-                    <td className="fw-bold text-primary">
-                      Ksh {Number(product.unit_price).toLocaleString()}.00
-                    </td>
-                    <td className="fw-bold text-primary">
-                      Ksh {Number(product.total_price).toLocaleString()}.00
-                    </td>
-                    <td>
-                      <div className="d-flex justify-content-center gap-2">
-                        <button
-                          className="btn btn-sm btn-outline-warning rounded-2"
-                          title="Edit Product"
-                          onClick={() => handleOpenEditModal(product)}
-                        >
-                          <i className="fa-solid fa-pen-to-square"></i>
-                        </button>
-
-                        <button
-                          className="btn btn-sm btn-outline-danger rounded-2"
-                          title="Delete Product"
-                          onClick={() => handleOpenDeleteModal(product)}
-                        >
-                          <i className="fa-solid fa-rectangle-xmark"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Main Content Area */}
+      <div className="flex-grow-1 p-4 overflow-auto">
+        {/* Header Section */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 gap-3">
+          <div>
+            <p className="text-muted small mb-0">
+              Manage store, view products, or perform updates
+            </p>
           </div>
 
-          {/* Pagination Controls */}
-          <div className="card-footer bg-white py-3 px-4 d-flex justify-content-between align-items-center border-top">
-            <span className="text-muted small">
-              Page{" "}
-              <strong className="text-dark">{pagination.currentPage}</strong>
-            </span>
+          {/* Search product */}
+          <div className="d-flex align-items-center gap-3">
+            <SearchProduct
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
 
-            <div className="d-flex gap-2">
-              <button
-                className="btn btn-sm btn-outline-secondary rounded-2 px-3"
-                onClick={() => handlePageChange(pagination.prevPageUrl)}
-                disabled={!pagination.prevPageUrl}
-              >
-                <i className="fa-solid fa-chevron-left me-1"></i> Previous
-              </button>
+            {/* Add product */}
+            <Link
+              to="/add"
+              className="btn btn-outline-dark fw-semibold rounded-3 px-3 d-flex align-items-center gap-1"
+              title="Add New Product"
+            >
+              <i className="fa-solid fa-plus"></i>
+            </Link>
+          </div>
+        </div>
 
-              <button
-                className="btn btn-sm btn-outline-primary rounded-2 px-3"
-                onClick={() => handlePageChange(pagination.nextPageUrl)}
-                disabled={!pagination.nextPageUrl}
-              >
-                Next <i className="fa-solid fa-chevron-right ms-1"></i>
-              </button>
+        {/* Loading Spinner */}
+        {loading && (
+          <div className="d-flex justify-content-center align-items-center py-5">
+            <div className="spinner-border text-primary me-2" role="status"></div>
+            <span className="text-muted">Loading product inventory...</span>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {error && (
+          <div
+            className="alert alert-danger d-flex align-items-center"
+            role="alert"
+          >
+            <div>{error}</div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && products.length === 0 && (
+          <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
+            <p className="text-muted fs-5 mb-0">
+              {searchTerm
+                ? `No products found matching "${searchTerm}".`
+                : "No products found in the database."}
+            </p>
+          </div>
+        )}
+
+        {/* Product Management Table */}
+        {!loading && !error && products.length > 0 && (
+          <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="table-dark">
+                  <tr>
+                    <th scope="col" className="ps-3" style={{ width: "80px" }}>
+                      ID
+                    </th>
+                    <th scope="col" style={{ width: "100px" }}>
+                      Image
+                    </th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Unit Price</th>
+                    <th scope="col">Total Price</th>
+                    <th
+                      scope="col"
+                      className="text-center"
+                      style={{ width: "200px" }}
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.id}>
+                      <td className="ps-3 fw-bold text-secondary">
+                        #{product.id}
+                      </td>
+                      <td>
+                        {product.image ? (
+                          <img
+                            src={`${STORAGE_URL}${product.image}`}
+                            alt={product.name}
+                            className="rounded border object-fit-cover"
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                        ) : (
+                          <div
+                            className="bg-light rounded border d-flex align-items-center justify-content-center text-muted small"
+                            style={{ width: "50px", height: "50px" }}
+                          >
+                            📷
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <div className="fw-semibold text-dark">
+                          {product.name}
+                        </div>
+                      </td>
+                      <td style={{ maxWidth: "300px" }}>
+                        <div
+                          className="text-muted small"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: "2",
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {product.description || "No description provided."}
+                        </div>
+                      </td>
+                      <td className="fw-bold text-primary">
+                        {Number(product.quantity).toLocaleString()}
+                      </td>
+                      <td className="fw-bold text-primary">
+                        Ksh {Number(product.unit_price).toLocaleString()}.00
+                      </td>
+                      <td className="fw-bold text-primary">
+                        Ksh {Number(product.total_price).toLocaleString()}.00
+                      </td>
+                      <td>
+                        <div className="d-flex justify-content-center gap-2">
+                          <button
+                            className="btn btn-sm btn-outline-warning rounded-2"
+                            title="Edit Product"
+                            onClick={() => handleOpenEditModal(product)}
+                          >
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </button>
+
+                          <button
+                            className="btn btn-sm btn-outline-danger rounded-2"
+                            title="Delete Product"
+                            onClick={() => handleOpenDeleteModal(product)}
+                          >
+                            <i className="fa-solid fa-rectangle-xmark"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="card-footer bg-white py-3 px-4 d-flex justify-content-between align-items-center border-top">
+              <span className="text-muted small">
+                Page{" "}
+                <strong className="text-dark">{pagination.currentPage}</strong>
+              </span>
+
+              <div className="d-flex gap-2">
+                <button
+                  className="btn btn-sm btn-outline-secondary rounded-2 px-3"
+                  onClick={() => handlePageChange(pagination.prevPageUrl)}
+                  disabled={!pagination.prevPageUrl}
+                >
+                  <i className="fa-solid fa-chevron-left me-1"></i> Previous
+                </button>
+
+                <button
+                  className="btn btn-sm btn-outline-primary rounded-2 px-3"
+                  onClick={() => handlePageChange(pagination.nextPageUrl)}
+                  disabled={!pagination.nextPageUrl}
+                >
+                  Next <i className="fa-solid fa-chevron-right ms-1"></i>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Delete Confirmation Modal */}
-      <DeleteProduct
-        show={showDeleteModal}
-        handleClose={handleCloseDeleteModal}
-        product={selectedProduct}
-        onSuccess={handleDeleteSuccess}
-      />
+        {/* Delete Confirmation Modal */}
+        <DeleteProduct
+          show={showDeleteModal}
+          handleClose={handleCloseDeleteModal}
+          product={selectedProduct}
+          onSuccess={handleDeleteSuccess}
+        />
 
-      {/* Edit Product Modal */}
-      <EditProduct
-        show={showEditModal}
-        handleClose={handleCloseEditModal}
-        product={editProductData}
-        onSuccess={handleEditSuccess}
-      />
+        {/* Edit Product Modal */}
+        <EditProduct
+          show={showEditModal}
+          handleClose={handleCloseEditModal}
+          product={editProductData}
+          onSuccess={handleEditSuccess}
+        />
+      </div>
     </div>
   );
 };

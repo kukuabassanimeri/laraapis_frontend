@@ -28,7 +28,6 @@ const Logout = () => {
       setUser({});
       setToken(null);
       setLoading(false);
-      // ProtectedLayout will immediately detect token === null and redirect to /login
     }
   };
 
@@ -36,7 +35,7 @@ const Logout = () => {
     <Button
       variant="outline-danger"
       size="sm"
-      className="fw-semibold px-3 py-1 ms-2 d-flex align-items-center gap-2"
+      className="fw-semibold px-1 py-1 ms-2 d-flex align-items-center"
       onClick={handleLogout}
       disabled={loading}
     >
@@ -53,7 +52,6 @@ const Logout = () => {
       ) : (
         <>
           <i className="fa-solid fa-arrow-right-from-bracket"></i>
-          <span>Logout</span>
         </>
       )}
     </Button>

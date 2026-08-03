@@ -132,7 +132,7 @@ const AddProduct = () => {
         <div className="col-12 col-sm-10 col-md-8 col-lg-6">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
             {/* Header Banner */}
-            <div className="card-header bg-primary text-white text-center py-4 border-0">
+            <div className="card-header bg-dark text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Add New Product</h4>
               <p className="small mb-0 opacity-75">
                 Enter details to add a new item to your inventory catalog
@@ -308,7 +308,7 @@ const AddProduct = () => {
                 <div className="d-grid gap-2">
                   <button
                     type="submit"
-                    className="btn btn-primary btn-lg rounded-3 fs-6 fw-semibold py-2 shadow-sm"
+                    className="btn btn-outline-dark btn-lg rounded-3 fs-6 fw-semibold py-2 shadow-sm"
                     disabled={loading}
                   >
                     {loading ? (
@@ -327,7 +327,7 @@ const AddProduct = () => {
 
                   <Link
                     to="/dashboard"
-                    className="btn btn-light btn-lg rounded-3 fs-6 fw-semibold py-2 text-secondary border"
+                    className="btn btn-outline-secondary btn-lg rounded-3 fs-6 fw-semibold py-2"
                   >
                     Cancel
                   </Link>

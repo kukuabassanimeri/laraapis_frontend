@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 import Footer from "./Footer";
+import Header from "./Header";
 
 const DefaultLayout = () => {
   const { token } = useStateContext();
@@ -13,6 +14,9 @@ const DefaultLayout = () => {
 
   return (
     <div>
+      <header>
+        <Header />
+      </header>
       <main>
         <Outlet />
       </main>
