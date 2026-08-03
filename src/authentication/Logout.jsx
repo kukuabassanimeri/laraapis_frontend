@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useStateContext } from "../context/ContextProvider";
 
 const Logout = () => {
+  const { token, setToken, setUser } = useStateContext();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
 
     try {
       if (token) {
-        //* Send request to Laravel Sanctum logout endpoint
+        //* Send revoke request to Laravel Sanctum endpoint
         await fetch("http://127.0.0.1:8000/api/logout", {
           method: "POST",
           headers: {
@@ -25,13 +24,11 @@ const Logout = () => {
     } catch (err) {
       console.error("Error logging out from server:", err);
     } finally {
-      //* Clear token & user info regardless of network response
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      //* Reset context state (setToken automatically updates LocalStorage)
+      setUser({});
+      setToken(null);
       setLoading(false);
-
-      //* Redirect to login page
-      navigate("/login");
+      // ProtectedLayout will immediately detect token === null and redirect to /login
     }
   };
 
@@ -54,7 +51,10 @@ const Logout = () => {
           <span>Logging out...</span>
         </>
       ) : (
-        <i className="fa-solid fa-arrow-right-from-bracket"></i>
+        <>
+          <i className="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </>
       )}
     </Button>
   );

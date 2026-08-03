@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useStateContext } from "../context/ContextProvider";
 
 const EditProduct = ({ show, handleClose, product, onSuccess }) => {
+  //* Context state for authentication
+  const { token } = useStateContext();
+
   //* Form State
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -20,6 +24,16 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
   const [submitting, setSubmitting] = useState(false);
 
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
+
+  //* Helper function to generate slug from product name
+  const createSlug = (text) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
 
   useEffect(() => {
     if (product) {
@@ -41,10 +55,22 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
     }
   }, [product]);
 
+  //* Handle Name change & update slug dynamically
+  const handleNameChange = (e) => {
+    const val = e.target.value;
+    setName(val);
+    setSlug(createSlug(val));
+  };
+
+  //* Handle File Upload & Preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
+
+      if (previewImage && previewImage.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImage);
+      }
       setPreviewImage(URL.createObjectURL(file));
     }
   };
@@ -55,9 +81,6 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
     setError("");
     setSuccess(null);
     setValidationErrors({});
-
-    const token =
-      sessionStorage.getItem("token") || localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("name", name);
@@ -82,20 +105,18 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-        }
+        },
       );
 
       const data = await response.json();
 
       if (response.ok) {
-
-        //* Show success alert inside the modal
         setSuccess("Product updated successfully!");
 
         setTimeout(() => {
           setSuccess(null);
           onSuccess(data);
-        }, 1500);
+        }, 1200);
       } else if (response.status === 422) {
         setValidationErrors(data.errors || {});
         setError("Please check the form for validation errors.");
@@ -103,7 +124,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
         setError(data.message || "Failed to update product.");
       }
     } catch (err) {
-      setError("An error occurred while updating the product.");
+      setError("An error occurred while communicating with the server.");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -120,6 +141,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
     >
       <div className="modal-dialog modal-lg modal-dialog-centered">
         <div className="modal-content shadow rounded-3 border-0">
+          {/* Modal Header */}
           <div className="modal-header border-bottom py-3">
             <h5 className="modal-title fw-bold text-dark">
               Edit Product #{product.id}
@@ -132,23 +154,28 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
             ></button>
           </div>
 
+          {/* Modal Body */}
           <div className="modal-body p-4">
-          
-            {/* Success and Error Alerts */}
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">{success}</div>}
+            {/* Feedback Alerts */}
+            {error && <div className="alert alert-danger small">{error}</div>}
+            {success && (
+              <div className="alert alert-success small">{success}</div>
+            )}
 
             <form onSubmit={handleSubmit}>
+              {/* Product Name & Slug Row */}
               <div className="row mb-3">
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">Product Name</label>
+                  <label className="form-label fw-semibold small text-secondary">
+                    Product Name
+                  </label>
                   <input
                     type="text"
                     className={`form-control ${
                       validationErrors.name ? "is-invalid" : ""
                     }`}
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleNameChange}
                     required
                   />
                   {validationErrors.name && (
@@ -157,8 +184,11 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                     </div>
                   )}
                 </div>
+
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">Slug</label>
+                  <label className="form-label fw-semibold small text-secondary">
+                    Slug
+                  </label>
                   <input
                     type="text"
                     className={`form-control ${
@@ -176,8 +206,11 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 </div>
               </div>
 
+              {/* Description */}
               <div className="mb-3">
-                <label className="form-label fw-semibold">Description</label>
+                <label className="form-label fw-semibold small text-secondary">
+                  Description
+                </label>
                 <textarea
                   className={`form-control ${
                     validationErrors.description ? "is-invalid" : ""
@@ -194,9 +227,12 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 )}
               </div>
 
+              {/* Quantity & Price Row */}
               <div className="row mb-3">
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">Quantity</label>
+                  <label className="form-label fw-semibold small text-secondary">
+                    Quantity
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -213,8 +249,11 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                     </div>
                   )}
                 </div>
+
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">Unit Price</label>
+                  <label className="form-label fw-semibold small text-secondary">
+                    Unit Price (Ksh)
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -234,8 +273,11 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 </div>
               </div>
 
+              {/* Image Input & Preview */}
               <div className="mb-3">
-                <label className="form-label fw-semibold">Product Image</label>
+                <label className="form-label fw-semibold small text-secondary">
+                  Product Image
+                </label>
                 <input
                   type="file"
                   className={`form-control ${
@@ -263,10 +305,19 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 )}
               </div>
 
+              {/* Action Buttons */}
               <div className="modal-footer px-0 pb-0 pt-3 border-top d-flex justify-content-end gap-2">
                 <button
+                  type="button"
+                  className="btn btn-outline-secondary rounded-2"
+                  onClick={handleClose}
+                  disabled={submitting}
+                >
+                  Cancel
+                </button>
+                <button
                   type="submit"
-                  className="btn btn-primary rounded-2 fw-semibold w-100"
+                  className="btn btn-primary rounded-2 fw-semibold px-4"
                   disabled={submitting}
                 >
                   {submitting ? (
@@ -274,6 +325,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                       <span
                         className="spinner-border spinner-border-sm me-2"
                         role="status"
+                        aria-hidden="true"
                       ></span>
                       Saving...
                     </>

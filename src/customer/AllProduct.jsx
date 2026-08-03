@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Footer from "../components/Footer";
 import SearchProduct from "../components/SearchProduct";
 import AddToCart from "./AddToCart";
 
@@ -27,15 +26,13 @@ const AllProduct = () => {
     return `${STORAGE_URL}/${cleanPath}`;
   };
 
-  //* Fetch or Search Products from Backend API
+  //* Fetch or Search Products from Backend API (Public - No Token Needed)
   const fetchProducts = async (query = "") => {
     setLoading(true);
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-
-      //* Use backend search route if query exists, otherwise fetch all
+      //* Public search vs public catalog list
       const endpoint = query.trim()
         ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
         : "http://127.0.0.1:8000/api/products";
@@ -45,7 +42,6 @@ const AllProduct = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
       });
 
@@ -152,7 +148,7 @@ const AllProduct = () => {
                   key={product.id}
                   className="col d-flex align-items-stretch"
                 >
-                  <div className="card h-100 w-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column hover-shadow transition">
+                  <div className="card h-100 w-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column">
                     {/* Product Image Container */}
                     <div
                       className="position-relative bg-light d-flex align-items-center justify-content-center overflow-hidden"
@@ -162,8 +158,7 @@ const AllProduct = () => {
                         <img
                           src={imageUrl}
                           alt={product.name}
-                          className="w-100 h-100 object-fit-cover hover-image"
-                          role="button"
+                          className="w-100 h-100 object-fit-cover hover-image" role="button"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src =
@@ -231,7 +226,7 @@ const AllProduct = () => {
           </div>
         )}
 
-        {/* AddToCart Modal */}
+        {/* AddToCart Modal / Drawer */}
         {selectedProduct && (
           <AddToCart
             product={selectedProduct}
@@ -239,9 +234,6 @@ const AllProduct = () => {
           />
         )}
       </main>
-
-      {/* Footer pinned at bottom */}
-      <Footer />
     </div>
   );
 };

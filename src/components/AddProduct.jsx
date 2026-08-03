@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useStateContext } from "../context/ContextProvider";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const AddProduct = () => {
-  //* Navigate State
+  //* Context state for authenticated requests
+  const { token } = useStateContext();
   const navigate = useNavigate();
 
   //* State to hold product details
@@ -32,7 +35,7 @@ const AddProduct = () => {
       .replace(/^-+|-+$/g, "");
   };
 
-  //* Calculate dynamic total price for the read-only input UI
+  //* Calculate dynamic total price for the read-only UI
   const calculatedTotal = (
     (parseFloat(productDetails.quantity) || 0) *
     (parseFloat(productDetails.unit_price) || 0)
@@ -40,7 +43,8 @@ const AddProduct = () => {
 
   //* Handle text input change
   const handleChange = (e) => {
-    setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProductDetails((prev) => ({ ...prev, [name]: value }));
   };
 
   //* Handle image input change & generate preview
@@ -48,6 +52,10 @@ const AddProduct = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProductImage(file);
+
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
       setImagePreview(URL.createObjectURL(file));
     }
   };
@@ -60,8 +68,6 @@ const AddProduct = () => {
     setSuccess(null);
 
     try {
-      const token = localStorage.getItem("token");
-
       const formData = new FormData();
       formData.append("name", productDetails.name);
       formData.append("slug", createSlug(productDetails.name));
@@ -85,7 +91,7 @@ const AddProduct = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Product successfully added");
+        setSuccess("Product successfully added to inventory.");
 
         //* Reset form state
         setProductDetails({
@@ -95,19 +101,25 @@ const AddProduct = () => {
           unit_price: "",
         });
         setProductImage(null);
-        setImagePreview(null);
+        if (imagePreview) {
+          URL.revokeObjectURL(imagePreview);
+          setImagePreview(null);
+        }
 
-        //* Redirect to product list
+        //* Redirect to dashboard after brief feedback delay
         setTimeout(() => {
           navigate("/dashboard");
-        }, 2000);
+        }, 1500);
       } else {
-        setError(
-          data.message || "Failed to add product. Check validation errors.",
-        );
+        if (data.errors) {
+          const firstErrorKey = Object.keys(data.errors)[0];
+          setError(data.errors[firstErrorKey][0]);
+        } else {
+          setError(data.message || "Failed to add product.");
+        }
       }
     } catch (err) {
-      setError("Unable to connect to the server. Please try again.");
+      setError("Unable to connect to the server. Please check your network.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -119,11 +131,11 @@ const AddProduct = () => {
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-sm-10 col-md-8 col-lg-6">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-            {/* Card Header Banner */}
+            {/* Header Banner */}
             <div className="card-header bg-primary text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Add New Product</h4>
               <p className="small mb-0 opacity-75">
-                Enter product details to list it in the inventory
+                Enter details to add a new item to your inventory catalog
               </p>
             </div>
 
@@ -131,17 +143,17 @@ const AddProduct = () => {
               {/* Alert Feedback */}
               {success && (
                 <div
-                  className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4"
+                  className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4 small"
                   role="alert"
                 >
-                  <span className="me-2">✓</span>
+                  <span className="me-2 fw-bold">✓</span>
                   <div>{success}</div>
                 </div>
               )}
 
               {error && (
                 <div
-                  className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4"
+                  className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4 small"
                   role="alert"
                 >
                   <div>{error}</div>
@@ -173,8 +185,8 @@ const AddProduct = () => {
                       <img
                         src={imagePreview}
                         alt="Product Preview"
-                        className="img-fluid rounded-2"
-                        style={{ maxHeight: "150px", objectFit: "cover" }}
+                        className="img-fluid rounded-2 object-fit-cover"
+                        style={{ maxHeight: "150px" }}
                       />
                     </div>
                   )}
@@ -208,7 +220,6 @@ const AddProduct = () => {
                   >
                     Description
                   </label>
-
                   <textarea
                     id="description"
                     name="description"
@@ -269,6 +280,27 @@ const AddProduct = () => {
                         className="form-control form-control-lg fs-6 py-2 rounded-end-3"
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* Calculated Total (Read-only) */}
+                <div className="mb-4">
+                  <label className="form-label small fw-semibold text-secondary">
+                    Total Estimated Value
+                  </label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 fs-6">
+                      Ksh
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control form-control-lg fs-6 py-2 bg-light fw-bold text-primary rounded-end-3"
+                      value={Number(calculatedTotal).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                      readOnly
+                    />
                   </div>
                 </div>
 

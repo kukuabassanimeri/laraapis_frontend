@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DeleteProduct from "../components/DeleteProduct";
 import SearchProduct from "../components/SearchProduct";
 import EditProduct from "../components/EditProduct";
+import Logout from "../authentication/Logout";
+import { useStateContext } from "../context/ContextProvider";
 
-const AdminDashboard = () => {
+const Dashboard = () => {
+  //* Context state for authentication
+  const { token } = useStateContext();
+
   //* State variables
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,15 +41,12 @@ const AdminDashboard = () => {
     setError("");
 
     try {
-      const token =
-        localStorage.getItem("token") || localStorage.getItem("token");
-
       let endpoint = fetchUrl;
 
       if (!endpoint) {
         endpoint = query.trim()
           ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(
-              query.trim()
+              query.trim(),
             )}`
           : "http://127.0.0.1:8000/api/products";
       }
@@ -94,7 +96,7 @@ const AdminDashboard = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, token]);
 
   //* Handle Previous / Next button click
   const handlePageChange = (url) => {
@@ -131,7 +133,7 @@ const AdminDashboard = () => {
 
   const handleEditSuccess = (updatedProduct) => {
     setProducts((prev) =>
-      prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)),
     );
     handleCloseEditModal();
   };
@@ -146,7 +148,7 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        {/* Search Input Field */}
+        {/* Search Input Field & Actions */}
         <div className="d-flex align-items-center gap-3">
           <SearchProduct
             searchTerm={searchTerm}
@@ -160,6 +162,11 @@ const AdminDashboard = () => {
           >
             <i className="fa-solid fa-plus"></i>
           </Link>
+        </div>
+
+        {/* Logout section */}
+        <div>
+          <Logout />
         </div>
       </div>
 
@@ -294,7 +301,7 @@ const AdminDashboard = () => {
             </table>
           </div>
 
-          {/* Pagination Footer Navigation Controls */}
+          {/* Pagination Controls */}
           <div className="card-footer bg-white py-3 px-4 d-flex justify-content-between align-items-center border-top">
             <span className="text-muted small">
               Page{" "}
@@ -341,4 +348,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default Dashboard;

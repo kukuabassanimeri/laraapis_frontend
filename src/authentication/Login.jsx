@@ -1,24 +1,23 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useStateContext } from "../context/ContextProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
-import SocialLogin from "./SocialLogin";
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
+  //* Access state management from Context
+  const { setToken, setUser } = useStateContext();
+
   //* State to hold user login details
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
   });
 
-  //* Navigation hook
-  const navigate = useNavigate();
-
-  //* Success, error, and loading states
+  //* Feedback and loading states
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //* Handle input fields
+  //* Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginDetails((prev) => ({
@@ -31,6 +30,7 @@ const Login = ({ onLoginSuccess }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login", {
@@ -45,40 +45,21 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
-        //* Save the Sanctum token
-        localStorage.setItem("token", data.token);
-
-        setSuccess("Login successful! Redirecting...");
-        setError(null);
-
-        //* Clear the login input fields
-        setLoginDetails({
-          email: "",
-          password: "",
-        });
-
-        //* Notify parent component if callback exists
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        }
-
-        //* Navigate after 2 seconds
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000);
+        //* Save user and token to Context
+        setUser(data.user);
+        setToken(data.token);
       } else {
-        setError(data.message);
-
-        setTimeout(() => {
-          setError(null);
-        }, 3000);
+        if (data.errors) {
+          const firstErrorKey = Object.keys(data.errors)[0];
+          setError(data.errors[firstErrorKey][0]);
+        } else {
+          setError(data.message || "Invalid login credentials.");
+        }
       }
     } catch (err) {
-      setError("Unable to connect to the server. Please try again.");
-
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
+      setError(
+        "Unable to connect to the server. Please check your network connection.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -99,19 +80,9 @@ const Login = ({ onLoginSuccess }) => {
 
             <div className="card-body p-4 p-sm-5 bg-white">
               {/* Alert Feedback */}
-              {success && (
-                <div
-                  className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4"
-                  role="alert"
-                >
-                  <span className="me-2">✓</span>
-                  <div>{success}</div>
-                </div>
-              )}
-
               {error && (
                 <div
-                  className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4"
+                  className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4 small"
                   role="alert"
                 >
                   <div>{error}</div>
@@ -119,7 +90,7 @@ const Login = ({ onLoginSuccess }) => {
               )}
 
               <form onSubmit={handleLogin}>
-                {/* User Email */}
+                {/* Email Field */}
                 <div className="mb-3">
                   <label
                     htmlFor="email"
@@ -139,7 +110,7 @@ const Login = ({ onLoginSuccess }) => {
                   />
                 </div>
 
-                {/* User Password */}
+                {/* Password Field */}
                 <div className="mb-4">
                   <label
                     htmlFor="password"
@@ -159,7 +130,7 @@ const Login = ({ onLoginSuccess }) => {
                   />
                 </div>
 
-                {/* Login Button */}
+                {/* Submit Button */}
                 <button
                   type="submit"
                   className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
@@ -179,11 +150,9 @@ const Login = ({ onLoginSuccess }) => {
                   )}
                 </button>
               </form>
-
-              <SocialLogin />
             </div>
 
-            {/* Footer with Navigation Link */}
+            {/* Navigation Footer */}
             <div className="card-footer bg-light text-center py-3 border-0">
               <span className="text-muted small">Don't have an account? </span>
               <Link

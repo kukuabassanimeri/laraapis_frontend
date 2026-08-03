@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useStateContext } from "../context/ContextProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Register = () => {
-  //* State to hold user registration details.
+  //* Access global context setters
+  const { setToken, setUser } = useStateContext();
+
+  //* State for form fields
   const [userDetails, setUserDetails] = useState({
     name: "",
     email: "",
@@ -11,15 +15,11 @@ const Register = () => {
     password_confirmation: "",
   });
 
-  //* Navigation hook
-  const navigate = useNavigate();
-
-  //* Success, error, and loading states
-  const [success, setSuccess] = useState(null);
+  //* UI state
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //* Handle input changes.
+  //* Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserDetails((prev) => ({
@@ -31,6 +31,14 @@ const Register = () => {
   //* Submit registration to Laravel API
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    //* Client-side confirmation check
+    if (userDetails.password !== userDetails.password_confirmation) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -46,29 +54,17 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
-
-        setSuccess("Account successfully created! Redirecting...");
-        setError(null);
-
-        // Clear input fields
-        setUserDetails({
-          name: "",
-          email: "",
-          password: "",
-          password_confirmation: "",
-        });
-
-        //* Redirect to login page after 2s
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        if (data.user) setUser(data.user);
+        if (data.token) setToken(data.token);
       } else {
-        setError(
-          data.message || "An error occurred while creating an account.",
-        );
+        if (data.errors) {
+          const firstErrorKey = Object.keys(data.errors)[0];
+          setError(data.errors[firstErrorKey][0]);
+        } else {
+          setError(
+            data.message || "An error occurred while creating an account.",
+          );
+        }
       }
     } catch (err) {
       setError(
@@ -85,7 +81,7 @@ const Register = () => {
         <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
           <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
             {/* Header Banner */}
-            <div className="card-header bg-dark text-white text-center py-2 border-0">
+            <div className="card-header bg-dark text-white text-center py-3 border-0">
               <h4 className="fw-bold mb-1">Create Account</h4>
               <p className="small mb-0 opacity-75">
                 Register to manage inventory
@@ -93,21 +89,10 @@ const Register = () => {
             </div>
 
             <div className="card-body p-4 p-sm-5 bg-white">
-
               {/* Alert Feedback */}
-              {success && (
-                <div
-                  className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4"
-                  role="alert"
-                >
-                  <span className="me-2">✓</span>
-                  <div>{success}</div>
-                </div>
-              )}
-
               {error && (
                 <div
-                  className="alert alert-danger d-flex align-items-center rounded-3 p-2 mb-4"
+                  className="alert alert-danger d-flex align-items-center rounded-3 p-2 mb-4 small"
                   role="alert"
                 >
                   <div>{error}</div>
@@ -176,7 +161,7 @@ const Register = () => {
                 </div>
 
                 {/* Confirm Password */}
-                <div className="mb-2">
+                <div className="mb-3">
                   <label
                     htmlFor="password_confirmation"
                     className="form-label small fw-semibold text-secondary"
@@ -198,7 +183,7 @@ const Register = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
+                  className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm mt-2"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -218,7 +203,7 @@ const Register = () => {
             </div>
 
             {/* Footer with Navigation Link */}
-            <div className="card-footer bg-light text-center py-2 border-0">
+            <div className="card-footer bg-light text-center py-3 border-0">
               <span className="text-muted small">
                 Already have an account?{" "}
               </span>
