@@ -8,6 +8,7 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(null);
 
   const STORAGE_URL = "http://127.0.0.1:8000/storage/";
 
@@ -32,14 +33,28 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
 
       if (response.ok) {
         onSuccess(product.id);
-        handleClose();
+
+        setSuccess("Product deleted successfully.");
+        setTimeout(() => {
+          setSuccess(null);
+          handleClose();
+        }, 3000);
       } else {
         const data = await response.json().catch(() => ({}));
         setError(data.message || "Failed to delete the product.");
+
+        setTimeout(() => {
+          setError(null);
+          handleClose(null);
+        }, 3000);
       }
     } catch (err) {
       console.error("Delete Error:", err);
       setError("Network error: Could not reach the API server.");
+
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -58,6 +73,13 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
           <div className="alert alert-danger py-2 mb-3 small">{error}</div>
         )}
 
+        {success && (
+          <div className="alert alert-success py-2 mb-3 small">
+            <span className="me-2 fw-bold">✓</span>
+            {success}
+          </div>
+        )}
+
         <p className="mb-3 text-secondary">
           Are you sure you want to delete this product? This action cannot be
           undone.
@@ -74,7 +96,7 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
             />
           ) : (
             <div
-              className="rounded text-white d-flex align-items-center justify-content-center me-3 fw-bold"
+              className="rounded bg-secondary text-white d-flex align-items-center justify-content-center me-3 fw-bold"
               style={{ width: "50px", height: "50px" }}
             >
               #
@@ -89,9 +111,10 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
 
       <Modal.Footer className="border-0 pt-0 d-flex gap-2">
         <Button
+          variant="outline-danger"
           onClick={handleDelete}
           disabled={loading}
-          className="d-flex align-items-center btn btn-outline-danger justify-content-center gap-2 flex-grow-1 fw-semibold"
+          className="d-flex align-items-center justify-content-center gap-2 flex-grow-1 fw-semibold w-100"
         >
           {loading ? (
             <>

@@ -52,14 +52,28 @@ const Login = () => {
         if (data.errors) {
           const firstErrorKey = Object.keys(data.errors)[0];
           setError(data.errors[firstErrorKey][0]);
+
+          //* Remove the error timeout
+          setTimeout(() => {
+            setError(null);
+          }, 3000);
         } else {
           setError(data.message || "Invalid login credentials.");
+          //* Remove the error timeout
+          setTimeout(() => {
+            setError(null);
+          }, 3000);
         }
       }
     } catch (err) {
       setError(
         "Unable to connect to the server. Please check your network connection.",
       );
+
+      //* Remove the error timeout
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     } finally {
       setIsSubmitting(false);
     }

@@ -8,9 +8,25 @@ const StateContext = createContext({
 });
 
 export const ContextProvider = ({ children }) => {
-  const [user, setUser] = useState({});
+  //* Read stored user from localStorage on initial load
+  const [user, _setUser] = useState(() => {
+    const savedUser = localStorage.getItem("USER");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
 
+  //* Persist or remove user in localStorage
+  const setUser = (user) => {
+    _setUser(user);
+    if (user) {
+      localStorage.setItem("USER", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("USER");
+    }
+  };
+
+  //* Persist or remove token in localStorage
   const setToken = (token) => {
     _setToken(token);
     if (token) {

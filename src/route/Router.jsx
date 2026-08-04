@@ -16,14 +16,9 @@ import SearchProduct from "../dashboard/SearchProduct";
 import NotFound from "../components/NotFound";
 
 const Router = createBrowserRouter([
-  //* Routes accessible by guests & logged-in users
   {
     path: "/",
     element: <Navigate to="/allproducts" replace />,
-  },
-  {
-    path: "/allproducts",
-    element: <AllProduct />,
   },
 
   //* GUEST-ONLY ROUTES: Login / Register
@@ -31,30 +26,35 @@ const Router = createBrowserRouter([
     element: <GuestLayout />,
     children: [
       {
-        path: "register",
+        path: "/register",
         element: <Register />,
       },
       {
-        path: "login",
+        path: "/login",
         element: <Login />,
       },
     ],
   },
 
-  //* PROTECTED ROUTES: Requires Login / Auth Guard
+  {
+    path: "/allproducts",
+    element: <AllProduct />,
+  },
+
+  //* PROTECTED / APP ROUTES
   {
     element: <DefaultLayout />,
     children: [
       {
-        path: "addtocart",
+        path: "/addtocart",
         element: <AddToCart />,
       },
       {
-        path: "cart",
+        path: "/cart",
         element: <Cart />,
       },
       {
-        path: "dashboard",
+        path: "/dashboard",
         element: <Dashboard />,
         children: [
           {
@@ -72,13 +72,13 @@ const Router = createBrowserRouter([
         ],
       },
       {
-        path: "add",
+        path: "/add",
         element: <AddProduct />,
       },
     ],
   },
 
-  //* 404 / FALLBACK ROUTE
+  //* 404 FALLBACK
   {
     path: "*",
     element: <NotFound />,

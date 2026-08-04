@@ -94,9 +94,7 @@ const Cart = ({ cartItems, onClose, onCartUpdate }) => {
                       {cartItems.map((item) => (
                         <tr key={item.id}>
                           <td className="fw-semibold text-dark">{item.name}</td>
-                          <td>
-                            Ksh {Number(item.unit_price).toLocaleString()}
-                          </td>
+                          <td>{Number(item.unit_price).toLocaleString()}</td>
                           <td>
                             <div className="d-flex justify-content-center align-items-center gap-2">
                               <button
@@ -118,7 +116,7 @@ const Cart = ({ cartItems, onClose, onCartUpdate }) => {
                             </div>
                           </td>
                           <td className="fw-bold text-success">
-                            Ksh {Number(item.total_price).toLocaleString()}
+                            {Number(item.total_price).toLocaleString()}
                           </td>
                           <td className="text-center">
                             <button
@@ -141,7 +139,7 @@ const Cart = ({ cartItems, onClose, onCartUpdate }) => {
                   </div>
                   <div>
                     <span className="fw-bold fs-5 text-success">
-                      Ksh {grandTotal.toLocaleString()}
+                      {grandTotal.toLocaleString()}
                     </span>
                   </div>
                 </div>

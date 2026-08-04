@@ -9,17 +9,17 @@ const UserInfo = () => {
         
       {/* Circle Icon Container */}
       <div
-        className="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center border border-primary-subtle mb-1"
+        className="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center border border-primary-subtle mb-1" role="button"
         style={{ width: "42px", height: "42px" }}
         title={user?.name || "User Profile"}
       >
-        <i className="fa-solid fa-user fs-5" role="button"></i>
+        <i className="fa-solid fa-user fs-5"></i>
       </div>
 
       {/* User Name Below */}
       <span
         className="text-dark fw-semibold small text-truncate"
-        style={{ maxWidth: "70px" }}
+        
         title={user?.name || "Guest"}
       >
         {user?.name || "Guest"}

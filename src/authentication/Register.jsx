@@ -13,6 +13,7 @@ const Register = () => {
     email: "",
     password: "",
     password_confirmation: "",
+    role: "customer",
   });
 
   //* UI state
@@ -28,6 +29,14 @@ const Register = () => {
     }));
   };
 
+  //* Helper function to display temporary errors
+  const triggerError = (msg) => {
+    setError(msg);
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  };
+
   //* Submit registration to Laravel API
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +44,7 @@ const Register = () => {
 
     //* Client-side confirmation check
     if (userDetails.password !== userDetails.password_confirmation) {
-      setError("Passwords do not match.");
+      triggerError("Passwords do not match.");
       return;
     }
 
@@ -59,15 +68,15 @@ const Register = () => {
       } else {
         if (data.errors) {
           const firstErrorKey = Object.keys(data.errors)[0];
-          setError(data.errors[firstErrorKey][0]);
+          triggerError(data.errors[firstErrorKey][0]);
         } else {
-          setError(
+          triggerError(
             data.message || "An error occurred while creating an account.",
           );
         }
       }
     } catch (err) {
-      setError(
+      triggerError(
         "Unable to connect to the server. Please check your connection.",
       );
     } finally {
@@ -138,6 +147,27 @@ const Register = () => {
                     className="form-control form-control-lg fs-6 py-2 rounded-3"
                     required
                   />
+                </div>
+
+                {/* Account Role Dropdown */}
+                <div className="mb-2">
+                  <label
+                    htmlFor="role"
+                    className="form-label small fw-semibold text-secondary"
+                  >
+                    Role
+                  </label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={userDetails.role}
+                    onChange={handleChange}
+                    className="form-select form-select-lg fs-6 py-2 rounded-3"
+                    required
+                  >
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                  </select>
                 </div>
 
                 {/* Password */}

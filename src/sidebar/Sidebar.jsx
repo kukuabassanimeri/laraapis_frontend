@@ -8,7 +8,7 @@ const Sidebar = () => {
   return (
     <div
       className="d-flex flex-column bg-white border-end min-vh-100 shadow-sm"
-      style={{ width: "80px", flexShrink: 0 }}
+      style={{ width: "100px", flexShrink: 0 }}
     >
       {/* Top Section: User Info Avatar */}
       <div className="p-3 border-bottom d-flex justify-content-center">

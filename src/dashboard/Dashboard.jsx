@@ -272,10 +272,10 @@ const Dashboard = () => {
                         {Number(product.quantity).toLocaleString()}
                       </td>
                       <td className="fw-bold text-primary">
-                        Ksh {Number(product.unit_price).toLocaleString()}.00
+                        {Number(product.unit_price).toLocaleString()}.00
                       </td>
                       <td className="fw-bold text-primary">
-                        Ksh {Number(product.total_price).toLocaleString()}.00
+                        {Number(product.total_price).toLocaleString()}.00
                       </td>
                       <td>
                         <div className="d-flex justify-content-center gap-2">

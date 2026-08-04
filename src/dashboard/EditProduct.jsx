@@ -111,7 +111,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Product updated successfully!");
+        setSuccess("Product updated successfully.");
 
         setTimeout(() => {
           setSuccess(null);
@@ -159,7 +159,10 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
             {/* Feedback Alerts */}
             {error && <div className="alert alert-danger small">{error}</div>}
             {success && (
-              <div className="alert alert-success small">{success}</div>
+              <div className="alert alert-success small">
+                <span className="me-2 fw-bold">✓</span>
+                {success}
+              </div>
             )}
 
             <form onSubmit={handleSubmit}>
@@ -309,7 +312,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
               <div className="modal-footer px-0 pb-0 pt-3 border-top d-flex justify-content-end gap-2">
                 <button
                   type="submit"
-                  className="btn btn-outline-dark rounded-2 fw-semibold px-4 w-100"
+                  className="btn btn-outline dark rounded-2 fw-semibold px-4 w-100"
                   disabled={submitting}
                 >
                   {submitting ? (
