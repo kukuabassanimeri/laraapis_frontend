@@ -10,6 +10,7 @@ import React, { useState } from "react";
 const AddToCart = ({ product, onClose, onCartUpdate }) => {
   //* State for selected quantity
   const [quantity, setQuantity] = useState(1);
+  const [success, setSuccess] = useState(null);
 
   if (!product) return null;
 
@@ -64,7 +65,11 @@ const AddToCart = ({ product, onClose, onCartUpdate }) => {
     }
 
     //* Close the modal
-    onClose();
+    setSuccess("Product added successfully to the cart.");
+    setTimeout(() => {
+      setSuccess(null);
+      onClose();
+    }, 3000);
   };
 
   return (
@@ -87,6 +92,18 @@ const AddToCart = ({ product, onClose, onCartUpdate }) => {
 
           {/* Modal Body */}
           <div className="modal-body text-center px-4 py-3">
+            
+            {/* Success message */}
+            {success && (
+              <div
+                className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4 small"
+                role="alert"
+              >
+                <span className="me-2 fw-bold">✓</span>
+                <div>{success}</div>
+              </div>
+            )}
+
             <h6 className="fw-bold mb-1 text-primary">{product.name}</h6>
             <p className="text-muted small mb-3">
               Unit Price:{" "}

@@ -1,23 +1,30 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
+import SocialLogin from "../socialites/SocialLogin";
 
 const Login = () => {
-  //* Access state management from Context
   const { setToken, setUser } = useStateContext();
+  const [searchParams] = useSearchParams();
 
-  //* State to hold user login details
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
   });
 
-  //* Feedback and loading states
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //* Handle input changes
+  useEffect(() => {
+    const urlError = searchParams.get("error");
+    if (urlError) {
+      setError(urlError);
+      const timer = setTimeout(() => setError(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginDetails((prev) => ({
@@ -26,7 +33,6 @@ const Login = () => {
     }));
   };
 
-  //* Handle user login
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -45,35 +51,22 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        //* Save user and token to Context
         setUser(data.user);
         setToken(data.token);
       } else {
         if (data.errors) {
           const firstErrorKey = Object.keys(data.errors)[0];
           setError(data.errors[firstErrorKey][0]);
-
-          //* Remove the error timeout
-          setTimeout(() => {
-            setError(null);
-          }, 3000);
         } else {
           setError(data.message || "Invalid login credentials.");
-          //* Remove the error timeout
-          setTimeout(() => {
-            setError(null);
-          }, 3000);
         }
+        setTimeout(() => setError(null), 3000);
       }
     } catch (err) {
       setError(
         "Unable to connect to the server. Please check your network connection.",
       );
-
-      //* Remove the error timeout
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
+      setTimeout(() => setError(null), 3000);
     } finally {
       setIsSubmitting(false);
     }
@@ -164,6 +157,9 @@ const Login = () => {
                   )}
                 </button>
               </form>
+
+              {/* Social Login Section */}
+              <SocialLogin />
             </div>
 
             {/* Navigation Footer */}
