@@ -14,6 +14,7 @@ import DeleteProduct from "../dashboard/DeleteProduct";
 import EditProduct from "../dashboard/EditProduct";
 import SearchProduct from "../dashboard/SearchProduct";
 import NotFound from "../components/NotFound";
+import Authcallback from "../socialites/Authcallback";
 
 const Router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const Router = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
+      {
+        path: "/auth/callback",
+        element: <Authcallback />
+      }
     ],
   },
 

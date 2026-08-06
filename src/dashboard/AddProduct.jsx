@@ -114,8 +114,17 @@ const AddProduct = () => {
         if (data.errors) {
           const firstErrorKey = Object.keys(data.errors)[0];
           setError(data.errors[firstErrorKey][0]);
+
+          setTimeout(() => {
+            setError(null);
+            navigate("/dashboard");
+          }, 3000);
         } else {
           setError(data.message || "Failed to add product.");
+          setTimeout(() => {
+            setError(null);
+            navigate("/dashboard");
+          }, 3000);
         }
       }
     } catch (err) {
@@ -271,7 +280,6 @@ const AddProduct = () => {
                         type="number"
                         id="unit_price"
                         name="unit_price"
-                        step="0.01"
                         min="0"
                         placeholder="0.00"
                         value={productDetails.unit_price}
