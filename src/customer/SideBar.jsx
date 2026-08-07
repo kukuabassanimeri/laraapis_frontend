@@ -1,37 +1,60 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import UserInfo from "../userinfo/UserInfo";
 import Logout from "../authentication/Logout";
-import { Link } from "react-router-dom";
 import Categories from "../category/Categories";
 
 const SideBar = () => {
+  const location = useLocation();
+  const isDashboardActive = location.pathname === "/dashboard";
+
   return (
-    <div
+    <aside
       className="d-flex flex-column bg-white border-end min-vh-100 shadow-sm"
-      style={{ width: "150px", flexShrink: 0 }}
+      style={{ width: "180px", flexShrink: 0 }}
     >
-      {/* Top Section: User Info Avatar */}
-      <div className="p-3 border-bottom d-flex justify-content-center">
+      {/* Top Section: User Info Avatar Container */}
+      <div className="p-3 border-bottom bg-light-subtle d-flex flex-column align-items-center text-center">
         <UserInfo />
       </div>
 
-      {/* Main Navigation Links */}
-      <div className="d-flex flex-column align-items-center gap-3 py-4">
-        {/* Dashboard Link */}
-        <Link
-          to="/dashboard"
-          className="btn btn-light rounded-3 d-flex align-items-center justify-content-center text-dark"
-          style={{ width: "48px", height: "48px" }}
-          title="Dashboard"
-        >
-          <i className="fa-solid fa-house fs-5"></i>
-        </Link>
+      {/* Main Navigation Section */}
+      <div className="d-flex flex-column justify-content-center flex-grow-1 p-3 align-items-center text-center">
+        <nav className="d-flex flex-column gap-2">
+          {/* Section Header Label */}
+          <span
+            className="text-uppercase text-secondary fw-bold px-2 mb-1"
+            style={{ fontSize: "0.7rem", letterSpacing: "0.05em" }}
+          >
+            Menu
+          </span>
 
-        {/* Categories Icon / Component */}
-        <Categories />
-        <Logout />
+          {/* Dashboard Link */}
+          <Link
+            to="/dashboard"
+            className={`btn d-flex align-items-center justify-content-center rounded-3 transition-all ${
+              isDashboardActive
+                ? "btn-primary text-white shadow-sm"
+                : "btn-light text-secondary border-0 bg-light-subtle"
+            }`}
+            style={{ width: "52px", height: "52px" }}
+            title="Dashboard"
+          >
+            <i className="fa-solid fa-house fs-5"></i>
+          </Link>
+
+          {/* Categories Component Wrapper */}
+          <div className="w-100">
+            <Categories />
+          </div>
+        </nav>
+
+        {/* Bottom Section: Logout */}
+        <div className="pt-3 border-top mt-auto">
+          <Logout />
+        </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

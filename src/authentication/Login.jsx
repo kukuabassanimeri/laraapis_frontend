@@ -64,7 +64,7 @@ const Login = () => {
       }
     } catch (err) {
       setError(
-        "Unable to connect to the server. Please check your network connection.",
+        "Unable to connect to the server. Please check your network connection."
       );
       setTimeout(() => setError(null), 3000);
     } finally {
@@ -76,23 +76,24 @@ const Login = () => {
     <div className="container min-vh-100 d-flex justify-content-center align-items-center py-5">
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
-          <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
+          <div className="card border-0 shadow-lg rounded-3 overflow-hidden">
             {/* Header Banner */}
             <div className="card-header bg-dark text-white text-center py-4 border-0">
               <h4 className="fw-bold mb-1">Welcome Back</h4>
-              <p className="small mb-0 opacity-75">
+              <p className="small mb-0 text-white-50">
                 Sign in to manage inventory
               </p>
             </div>
 
             <div className="card-body p-4 p-sm-5 bg-white">
+              {/* Feedback Alert */}
               {error && (
                 <div
-                  className="alert alert-danger py-2 small rounded-2 mb-3"
+                  className="alert alert-danger d-flex align-items-center mb-4"
                   role="alert"
                 >
-                  <i className="fa-solid fa-circle-exclamation me-2"></i>
-                  {error}
+                  <i className="bi bi-exclamation-triangle-fill me-2 flex-shrink-0"></i>
+                  <div className="small">{error}</div>
                 </div>
               )}
 
@@ -101,7 +102,7 @@ const Login = () => {
                 <div className="mb-3">
                   <label
                     htmlFor="email"
-                    className="form-label small fw-semibold text-secondary"
+                    className="form-label small fw-bold text-uppercase text-secondary"
                   >
                     Email Address
                   </label>
@@ -112,7 +113,7 @@ const Login = () => {
                     placeholder="name@example.com"
                     value={loginDetails.email}
                     onChange={handleChange}
-                    className="form-control form-control-lg fs-6 py-2 rounded-3"
+                    className="form-control py-2"
                     required
                   />
                 </div>
@@ -121,7 +122,7 @@ const Login = () => {
                 <div className="mb-4">
                   <label
                     htmlFor="password"
-                    className="form-label small fw-semibold text-secondary"
+                    className="form-label small fw-bold text-uppercase text-secondary"
                   >
                     Password
                   </label>
@@ -132,7 +133,7 @@ const Login = () => {
                     placeholder="••••••••"
                     value={loginDetails.password}
                     onChange={handleChange}
-                    className="form-control form-control-lg fs-6 py-2 rounded-3"
+                    className="form-control py-2"
                     required
                   />
                 </div>
@@ -140,7 +141,7 @@ const Login = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 shadow-sm"
+                  className="btn btn-dark w-100 py-2 fw-semibold shadow-sm"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -163,11 +164,11 @@ const Login = () => {
             </div>
 
             {/* Navigation Footer */}
-            <div className="card-footer bg-light text-center py-3 border-0">
+            <div className="card-footer bg-light text-center py-3 border-top-0">
               <span className="text-muted small">Don't have an account? </span>
               <Link
                 to="/register"
-                className="text-primary text-decoration-none fw-semibold small"
+                className="text-primary text-decoration-none fw-semibold small ms-1"
               >
                 Sign Up
               </Link>

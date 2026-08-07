@@ -108,12 +108,6 @@ const Cart = ({ cartItems = [], onClose, onCartUpdate }) => {
                 <p className="text-muted small mb-4">
                   Looks like you haven't added anything to your cart yet.
                 </p>
-                <button
-                  className="btn btn-primary rounded-3 px-4 py-2 fw-medium shadow-sm"
-                  onClick={onClose}
-                >
-                  Continue Shopping
-                </button>
               </div>
             ) : (
               /* Cart Items Table */
@@ -177,9 +171,6 @@ const Cart = ({ cartItems = [], onClose, onCartUpdate }) => {
                               >
                                 {item.name}
                               </div>
-                              <span className="text-muted extra-small">
-                                ID: #{item.id}
-                              </span>
                             </div>
                           </div>
                         </td>

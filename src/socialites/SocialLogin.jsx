@@ -12,9 +12,9 @@ const SocialLogin = () => {
     <div>
       {/* Divider */}
       <div className="d-flex align-items-center my-4">
-        <hr className="flex-grow-1" />
-        <span className="px-2 text-muted small fw-semibold">OR</span>
-        <hr className="flex-grow-1" />
+        <hr className="flex-grow-1 m-0 text-secondary opacity-25" />
+        <span className="px-3 text-secondary small fw-bold text-uppercase">OR</span>
+        <hr className="flex-grow-1 m-0 text-secondary opacity-25" />
       </div>
 
       {/* Google Login Button */}
@@ -22,10 +22,23 @@ const SocialLogin = () => {
         type="button"
         disabled={redirecting}
         onClick={() => handleSocialLogin("google")}
-        className="btn btn-outline-dark btn-lg w-100 rounded-3 fs-6 fw-semibold py-2 d-flex align-items-center justify-content-center gap-2"
+        className="btn btn-outline-secondary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm"
       >
-        <i className="fa-brands fa-google text-danger fs-5"></i>
-        {redirecting ? "Redirecting to Google..." : "Sign in with Google"}
+        {redirecting ? (
+          <>
+            <span
+              className="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Redirecting to Google...
+          </>
+        ) : (
+          <>
+            <i className="bi bi-google text-danger fs-6"></i>
+            Continue with Google
+          </>
+        )}
       </button>
     </div>
   );

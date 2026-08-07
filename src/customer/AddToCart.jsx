@@ -146,16 +146,6 @@ const AddToCart = ({ product, onClose, onCartUpdate }) => {
               )}
 
               <div className="flex-grow-1 overflow-hidden">
-                <div className="d-flex align-items-center gap-2 mb-1">
-                  {categoryName && (
-                    <span className="badge bg-white text-dark border fw-normal px-2 py-1 extra-small">
-                      {categoryName}
-                    </span>
-                  )}
-                  <span className="text-muted extra-small">
-                    ID: #{product.id}
-                  </span>
-                </div>
                 <h6 className="fw-bold text-dark text-truncate mb-1">
                   {product.name}
                 </h6>
