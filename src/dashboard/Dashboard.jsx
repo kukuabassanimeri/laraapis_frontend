@@ -47,7 +47,6 @@ const Dashboard = () => {
       let endpoint = fetchUrl;
 
       if (!endpoint) {
-        // Base route depending on search term
         let baseUrl = query.trim()
           ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
           : "http://127.0.0.1:8000/api/products";
@@ -159,55 +158,86 @@ const Dashboard = () => {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-grow-1 p-4 overflow-auto">
-        {/* Header Section */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 gap-3">
-          <div>
-            <h4 className="fw-bold text-dark mb-1">Product Inventory</h4>
-            <p className="text-muted small mb-0">
-              Manage store, view products, or perform updates
-            </p>
+      <div className="flex-grow-1 p-3 p-md-4 overflow-auto">
+        {/* Header Card */}
+        <div className="bg-white p-3 p-md-4 rounded-3 shadow-sm border mb-4">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+              <div className="d-flex align-items-center gap-2">
+                <h4 className="fw-bold text-dark mb-0">Product Inventory</h4>
+              </div>
+              <p className="text-secondary small mb-0 mt-1">
+                Manage store inventory, view products, or perform stock updates
+              </p>
+            </div>
+
+            {/* Search component */}
+            <div className="d-flex align-items-center">
+              <SearchProduct
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+              />
+            </div>
           </div>
 
-          {/* Search field */}
-          <div className="d-flex align-items-center">
-            <SearchProduct
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          </div>
+          {/* Active Category Filter Banner */}
+          {categoryParam && (
+            <div className="d-flex align-items-center gap-2 mt-3 pt-3 border-top">
+              <span className="text-muted small">Filtered by Category ID:</span>
+              <span className="badge bg-dark text-white fw-medium d-flex align-items-center gap-2 px-2 py-1">
+                #{categoryParam}
+                <i
+                  className="fa-solid fa-xmark cursor-pointer"
+                  style={{ cursor: "pointer" }}
+                  onClick={handleClearCategoryFilter}
+                  title="Remove filter"
+                ></i>
+              </span>
+              <button
+                className="btn btn-link btn-sm text-decoration-none p-0 ms-2 text-muted small"
+                onClick={handleClearCategoryFilter}
+              >
+                Clear Filter
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Loading Spinner */}
         {loading && (
-          <div className="d-flex justify-content-center align-items-center py-5">
+          <div className="d-flex flex-column justify-content-center align-items-center py-5">
             <div
-              className="spinner-border text-primary me-2"
+              className="spinner-border text-primary mb-2"
               role="status"
             ></div>
-            <span className="text-muted">Loading product inventory...</span>
+            <span className="text-muted small fw-medium">
+              Loading inventory records...
+            </span>
           </div>
         )}
 
         {/* Error Alert */}
         {error && (
           <div
-            className="alert alert-danger d-flex align-items-center"
+            className="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 rounded-3 shadow-sm mb-4"
             role="alert"
           >
+            <i className="fa-solid fa-circle-exclamation fs-5"></i>
             <div>{error}</div>
           </div>
         )}
 
         {/* Empty State */}
         {!loading && !error && products.length === 0 && (
-          <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
-            <p className="text-muted fs-5 mb-0">
+          <div className="text-center py-5 bg-white rounded-3 shadow-sm border my-2">
+            <i className="fa-solid fa-folder-open fs-1 text-muted mb-3 d-block"></i>
+            <h5 className="fw-bold text-secondary mb-1">No Products Found</h5>
+            <p className="text-muted small mb-0">
               {searchTerm
                 ? `No products found matching "${searchTerm}".`
                 : categoryParam
-                  ? "No products found in this category."
-                  : "No products found in the database."}
+                  ? "No products available under this category."
+                  : "No products currently exist in the database."}
             </p>
             {categoryParam && (
               <button
@@ -225,135 +255,184 @@ const Dashboard = () => {
           <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
-                <thead className="table-dark">
+                <thead
+                  className="bg-light border-bottom text-uppercase text-secondary"
+                  style={{ fontSize: "0.75rem", letterSpacing: "0.5px" }}
+                >
                   <tr>
-                    <th scope="col" className="ps-3" style={{ width: "80px" }}>
-                      ID
-                    </th>
-                    <th scope="col" style={{ width: "100px" }}>
-                      Image
-                    </th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Unit Price</th>
-                    <th scope="col">Total Price</th>
                     <th
                       scope="col"
-                      className="text-center"
-                      style={{ width: "200px" }}
+                      className="ps-4 py-3"
+                      style={{ width: "70px" }}
+                    >
+                      ID
+                    </th>
+                    <th scope="col" className="py-3" style={{ width: "80px" }}>
+                      Image
+                    </th>
+                    <th scope="col" className="py-3">
+                      Name
+                    </th>
+                    <th scope="col" className="py-3">
+                      Description
+                    </th>
+                    <th scope="col" className="py-3">
+                      Category
+                    </th>
+                    <th scope="col" className="py-3 text-end">
+                      Quantity
+                    </th>
+                    <th scope="col" className="py-3 text-end">
+                      Unit Price
+                    </th>
+                    <th scope="col" className="py-3 text-end">
+                      Total Price
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 text-center pe-4"
+                      style={{ width: "130px" }}
                     >
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product.id}>
-                      <td className="ps-3 fw-bold text-secondary">
-                        #{product.id}
-                      </td>
-                      <td>
-                        {product.image ? (
-                          <img
-                            src={`${STORAGE_URL}${product.image}`}
-                            alt={product.name}
-                            className="rounded border object-fit-cover"
-                            style={{ width: "50px", height: "50px" }}
-                          />
-                        ) : (
+                <tbody className="border-top-0">
+                  {products.map((product) => {
+                    const categoryName =
+                      typeof product.category === "object"
+                        ? product.category?.name || "Uncategorized"
+                        : product.category || "Uncategorized";
+
+                    return (
+                      <tr key={product.id}>
+                        {/* ID */}
+                        <td className="ps-4 fw-bold text-secondary small">
+                          #{product.id}
+                        </td>
+
+                        {/* Image Thumbnail */}
+                        <td>
+                          {product.image ? (
+                            <img
+                              src={`${STORAGE_URL}${product.image}`}
+                              alt={product.name}
+                              className="rounded-2 border object-fit-cover shadow-sm"
+                              style={{ width: "44px", height: "44px" }}
+                            />
+                          ) : (
+                            <div
+                              className="bg-light rounded-2 border d-flex align-items-center justify-content-center text-muted"
+                              style={{ width: "44px", height: "44px" }}
+                            >
+                              <i className="fa-solid fa-image text-black-50"></i>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Product Name */}
+                        <td>
                           <div
-                            className="bg-light rounded border d-flex align-items-center justify-content-center text-muted small"
-                            style={{ width: "50px", height: "50px" }}
+                            className="fw-semibold text-dark text-truncate"
+                            style={{ maxWidth: "180px" }}
                           >
-                            📷
+                            {product.name}
                           </div>
-                        )}
-                      </td>
-                      <td>
-                        <div className="fw-semibold text-dark">
-                          {product.name}
-                        </div>
-                      </td>
-                      <td style={{ maxWidth: "300px" }}>
-                        <div
-                          className="text-muted small"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: "2",
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {product.description || "No description provided."}
-                        </div>
-                      </td>
+                        </td>
 
-                      <td>
-                        <div className="fw-semibold text-dark">
-                          {typeof product.category === "object"
-                            ? product.category?.name || "Uncategorized"
-                            : product.category || "Uncategorized"}
-                        </div>
-                      </td>
-
-                      <td className="fw-bold text-success">
-                        {Number(product.quantity).toLocaleString()}
-                      </td>
-                      <td className="fw-bold text-success">
-                        {Number(product.unit_price).toLocaleString()}.00
-                      </td>
-                      <td className="fw-bold text-success">
-                        {Number(product.total_price).toLocaleString()}.00
-                      </td>
-                      <td>
-                        <div className="d-flex justify-content-center gap-2">
-                          <button
-                            className="btn btn-sm btn-outline-warning rounded-2"
-                            title="Edit Product"
-                            onClick={() => handleOpenEditModal(product)}
+                        {/* Description */}
+                        <td style={{ maxWidth: "260px" }}>
+                          <div
+                            className="text-secondary small"
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: "2",
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              lineHeight: "1.3",
+                            }}
                           >
-                            <i className="fa-solid fa-pen-to-square"></i>
-                          </button>
+                            {product.description || "No description provided."}
+                          </div>
+                        </td>
 
-                          <button
-                            className="btn btn-sm btn-outline-danger rounded-2"
-                            title="Delete Product"
-                            onClick={() => handleOpenDeleteModal(product)}
-                          >
-                            <i className="fa-solid fa-rectangle-xmark"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        {/* Category */}
+                        <td>
+                          <span className="badge bg-light text-dark border fw-normal px-2 py-1">
+                            {categoryName}
+                          </span>
+                        </td>
+
+                        {/* Quantity */}
+                        <td className="fw-semibold text-dark text-end">
+                          {Number(product.quantity).toLocaleString()}
+                        </td>
+
+                        {/* Unit Price */}
+                        <td className="fw-semibold text-dark text-end">
+                          <span className="text-muted extra-small me-1">
+                            Ksh
+                          </span>
+                          {Number(product.unit_price).toLocaleString()}
+                        </td>
+
+                        {/* Total Price */}
+                        <td className="fw-bold text-primary text-end">
+                          <span className="text-muted extra-small me-1">
+                            Ksh
+                          </span>
+                          {Number(product.total_price).toLocaleString()}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="pe-4">
+                          <div className="d-flex justify-content-center gap-1">
+                            <button
+                              className="btn btn-sm btn-light border text-warning hover-warning rounded-2 px-2 py-1"
+                              title="Edit Product"
+                              onClick={() => handleOpenEditModal(product)}
+                            >
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </button>
+
+                            <button
+                              className="btn btn-sm btn-light border text-danger hover-danger rounded-2 px-2 py-1"
+                              title="Delete Product"
+                              onClick={() => handleOpenDeleteModal(product)}
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
 
-            {/* Pagination Controls */}
-            <div className="card-footer bg-white py-3 px-4 d-flex justify-content-between align-items-center border-top">
+            {/* Pagination Footer */}
+            <div className="card-footer bg-white py-3 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 border-top">
               <span className="text-muted small">
-                Page{" "}
+                Showing Page{" "}
                 <strong className="text-dark">{pagination.currentPage}</strong>
               </span>
 
               <div className="d-flex gap-2">
                 <button
-                  className="btn btn-sm btn-outline-secondary rounded-2 px-3"
+                  className="btn btn-sm btn-outline-secondary rounded-2 px-3 d-flex align-items-center gap-1"
                   onClick={() => handlePageChange(pagination.prevPageUrl)}
                   disabled={!pagination.prevPageUrl}
                 >
-                  <i className="fa-solid fa-chevron-left me-1"></i> Previous
+                  <i className="fa-solid fa-chevron-left small"></i> Previous
                 </button>
 
                 <button
-                  className="btn btn-sm btn-outline-primary rounded-2 px-3"
+                  className="btn btn-sm btn-outline-primary rounded-2 px-3 d-flex align-items-center gap-1"
                   onClick={() => handlePageChange(pagination.nextPageUrl)}
                   disabled={!pagination.nextPageUrl}
                 >
-                  Next <i className="fa-solid fa-chevron-right ms-1"></i>
+                  Next <i className="fa-solid fa-chevron-right small"></i>
                 </button>
               </div>
             </div>

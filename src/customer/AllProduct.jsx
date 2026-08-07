@@ -3,6 +3,7 @@ import SearchProduct from "../dashboard/SearchProduct";
 import AddToCart from "./AddToCart";
 import Cart from "./Cart";
 import Footer from "../components/Footer";
+import SideBar from "./SideBar";
 
 const AllProduct = () => {
   //* State variables
@@ -88,179 +89,205 @@ const AllProduct = () => {
   }, [searchTerm]);
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
-      {/* Main Content Area */}
-      <main className="container-fluid py-4 px-md-5 flex-grow-1">
-        {/* Header Section */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 border-bottom pb-3 gap-3">
-          <div>
-            <h3 className="fw-bold mb-1 text-dark">
-              Yaka Technologies Product Catalog
-            </h3>
-            <p className="text-muted small mb-0">
-              Discover our latest additions and deals just for you
-            </p>
-          </div>
+    <>
+      <div className="d-flex min-vh-100 bg-light">
+        <SideBar />
 
-          <div className="d-flex align-items-center gap-3">
-            {/* Search Component */}
-            <SearchProduct
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
+        {/* Main View Area */}
+        <main className="flex-grow-1 p-3 p-md-4 overflow-auto">
+          {/* Header Bar */}
+          <div className="bg-white p-3 p-md-4 rounded-3 shadow-sm border mb-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <div>
+                <h4 className="fw-bold text-dark mb-1">
+                  Yaka Technologies Product Catalog
+                </h4>
+                <p className="text-secondary small mb-0">
+                  Discover our latest additions and deals just for you
+                </p>
+              </div>
 
-            {/* Cart Icon with Dynamic Badge */}
-            <button
-              className="btn btn-light position-relative border-0 bg-transparent fs-5 p-2"
-              onClick={() => setShowCartView(true)}
-              title="Open Cart"
-            >
-              <i className="fa-solid fa-cart-shopping text-dark"></i>
-              {totalCartCount > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-6">
-                  {totalCartCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+              <div className="d-flex align-items-center gap-2">
+                <SearchProduct
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
 
-        {/* Loading Spinner */}
-        {loading && (
-          <div className="d-flex justify-content-center align-items-center py-5">
-            <div
-              className="spinner-border text-primary me-2"
-              role="status"
-            ></div>
-            <span className="text-muted">Loading products...</span>
-          </div>
-        )}
-
-        {/* Error Alert */}
-        {error && (
-          <div
-            className="alert alert-danger py-2 small rounded-2 mb-3"
-            role="alert"
-          >
-            <i className="fa-solid fa-circle-exclamation me-2"></i>
-            {error}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && !error && products.length === 0 && (
-          <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
-            <p className="text-muted fs-5 mb-0">
-              {searchTerm
-                ? `No products found matching "${searchTerm}".`
-                : "No products found in the catalog."}
-            </p>
-          </div>
-        )}
-
-        {/* Products Grid */}
-        {!loading && !error && products.length > 0 && (
-          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
-            {products.map((product) => {
-              const imageUrl = getImageUrl(product.image);
-
-              return (
-                <div
-                  key={product.id}
-                  className="col d-flex align-items-stretch"
+                {/* Cart Icon Button */}
+                <button
+                  className="btn btn-outline-dark position-relative rounded-circle p-2 d-flex align-items-center justify-content-center"
+                  style={{ width: "42px", height: "42px" }}
+                  onClick={() => setShowCartView(true)}
+                  title="Open Cart"
                 >
-                  <div className="card h-100 w-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column">
-                    <div
-                      className="position-relative bg-light d-flex align-items-center justify-content-center overflow-hidden"
-                      style={{ height: "180px" }}
-                    >
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt={product.name}
-                          className="w-100 h-100 object-fit-cover hover-image"
-                          role="button"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src =
-                              "https://via.placeholder.com/180?text=No+Image";
-                          }}
-                        />
-                      ) : (
-                        <div className="text-secondary text-center small p-2">
-                          <span className="d-block mb-1 fs-4">📷</span>
-                          <span>No Image</span>
-                        </div>
-                      )}
-                    </div>
+                  <i className="fa-solid fa-cart-shopping fs-6"></i>
+                  {totalCartCount > 0 && (
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                      {totalCartCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
 
-                    <div className="card-body d-flex flex-column justify-content-between p-3">
-                      <div>
-                        <h6
-                          className="card-title text-truncate fw-bold text-dark mb-1"
-                          title={product.name}
-                        >
-                          {product.name}
-                        </h6>
-                        <p
-                          className="card-text text-muted small mb-3"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: "2",
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            minHeight: "38px",
-                          }}
-                        >
-                          {product.description ||
-                            "No description provided for this product."}
-                        </p>
+          {/* Loading State */}
+          {loading && (
+            <div className="d-flex flex-column justify-content-center align-items-center py-5">
+              <div
+                className="spinner-border text-primary mb-2"
+                role="status"
+              ></div>
+              <span className="text-muted fw-medium small">
+                Loading catalog products...
+              </span>
+            </div>
+          )}
+
+          {/* Error Alert */}
+          {error && (
+            <div
+              className="alert alert-danger d-flex align-items-center gap-2 py-3 px-4 rounded-3 shadow-sm mb-4"
+              role="alert"
+            >
+              <i className="fa-solid fa-circle-exclamation fs-5"></i>
+              <div>{error}</div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !error && products.length === 0 && (
+            <div className="text-center py-5 bg-white rounded-3 shadow-sm border my-4">
+              <i className="fa-solid fa-box-open fs-1 text-muted mb-3 d-block"></i>
+              <h5 className="fw-bold text-secondary mb-1">No Products Found</h5>
+              <p className="text-muted small mb-0">
+                {searchTerm
+                  ? `No results matching "${searchTerm}". Try searching for something else.`
+                  : "There are currently no products available in the store."}
+              </p>
+            </div>
+          )}
+
+          {/* Product Grid */}
+          {!loading && !error && products.length > 0 && (
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+              {products.map((product) => {
+                const imageUrl = getImageUrl(product.image);
+
+                return (
+                  <div
+                    key={product.id}
+                    className="col d-flex align-items-stretch"
+                  >
+                    <div className="card h-100 w-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column transition-all hover-shadow">
+                      {/* Product Thumbnail Container */}
+                      <div
+                        className="position-relative bg-white d-flex align-items-center justify-content-center border-bottom overflow-hidden"
+                        style={{ height: "190px" }}
+                      >
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt={product.name}
+                            className="w-100 h-100 object-fit-contain p-2"
+                            role="button"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://via.placeholder.com/180?text=No+Image";
+                            }}
+                          />
+                        ) : (
+                          <div className="text-secondary text-center small p-2">
+                            <i className="fa-solid fa-image fs-2 mb-1 d-block text-black-50"></i>
+                            <span className="text-muted extra-small">
+                              No image available
+                            </span>
+                          </div>
+                        )}
                       </div>
 
-                      <div className="pt-2 border-top d-flex align-items-center justify-content-between">
+                      {/* Card Content Body */}
+                      <div className="card-body d-flex flex-column justify-content-between p-3">
                         <div>
-                          <span className="d-block">Price</span>
-                          <span className="fw-bold text-success fs-6">
-                            Ksh{" "}
-                            {Number(product.unit_price || 0).toLocaleString()}
-                          </span>
+                          <h6
+                            className="card-title fw-bold text-dark text-truncate mb-1"
+                            title={product.name}
+                          >
+                            {product.name}
+                          </h6>
+
+                          <p
+                            className="card-text text-secondary small mb-3"
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: "2",
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              minHeight: "36px",
+                              lineHeight: "1.3",
+                            }}
+                          >
+                            {product.description ||
+                              "No description provided for this product."}
+                          </p>
                         </div>
-                        <button
-                          className="btn btn-sm btn-outline-dark rounded-2 px-2 py-1"
-                          onClick={() => setSelectedProduct(product)}
-                        >
-                          Add
-                        </button>
+
+                        {/* Card Bottom: Price & Call to Action */}
+                        <div className="pt-2 border-top d-flex align-items-center justify-content-between mt-auto">
+                          <div>
+                            <span
+                              className="text-uppercase fw-bold d-block"
+                              style={{
+                                fontSize: "0.65rem",
+                                letterSpacing: "0.5px",
+                              }}
+                            >
+                              Price
+                            </span>
+                            <span className="fw-bold text-primary fs-6">
+                              Ksh{" "}
+                              {Number(product.unit_price || 0).toLocaleString()}
+                            </span>
+                          </div>
+
+                          <button
+                            className="btn btn-sm btn-primary rounded-2 px-3 fw-medium d-flex align-items-center gap-1"
+                            onClick={() => setSelectedProduct(product)}
+                          >
+                            Add
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-        {/* AddToCart Modal */}
-        {selectedProduct && (
-          <AddToCart
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
-            onCartUpdate={handleCartUpdate}
-          />
-        )}
+          {/* AddToCart Modal */}
+          {selectedProduct && (
+            <AddToCart
+              product={selectedProduct}
+              onClose={() => setSelectedProduct(null)}
+              onCartUpdate={handleCartUpdate}
+            />
+          )}
 
-        {/* Cart View Modal */}
-        {showCartView && (
-          <Cart
-            cartItems={cart}
-            onClose={() => setShowCartView(false)}
-            onCartUpdate={handleCartUpdate}
-          />
-        )}
-      </main>
+          {/* Cart View Modal */}
+          {showCartView && (
+            <Cart
+              cartItems={cart}
+              onClose={() => setShowCartView(false)}
+              onCartUpdate={handleCartUpdate}
+            />
+          )}
+        </main>
+      </div>
 
       <Footer />
-    </div>
+    </>
   );
 };
 

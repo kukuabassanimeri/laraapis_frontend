@@ -2,10 +2,17 @@
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
-.hover-image {
-    transition: transform 0.5s ease-in-out;
+/* Card Hover elevation effect */
+.hover-shadow {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hover-image:hover {
-    transform: scale(1.1);
+.hover-shadow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Helper for tiny text */
+.extra-small {
+  font-size: 0.75rem;
 }

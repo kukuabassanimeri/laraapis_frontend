@@ -170,71 +170,140 @@ const AddProduct = ({ show, handleClose, onSuccess }) => {
   if (!show) return null;
 
   return (
-    <>
-      {/* Modal Backdrop */}
-      <div
-        className="modal-backdrop fade show"
-        style={{ zIndex: 1050 }}
-        onClick={handleModalClose}
-      ></div>
-
-      {/* Modal Dialog */}
-      <div
-        className="modal fade show d-block"
-        tabIndex="-1"
-        style={{ zIndex: 1055 }}
-        aria-modal="true"
-        role="dialog"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-            {/* Modal Header */}
-            <div className="modal-header bg-dark text-white py-3 border-0 position-relative">
-              <div className="w-100 text-center">
-                <h5 className="modal-title fw-bold mb-0">Add New Product</h5>
-                <p className="small mb-0 opacity-75">
-                  Enter details to add a new item to the inventory catalog
-                </p>
+    <div
+      className="modal fade show d-block"
+      tabIndex="-1"
+      style={{
+        backgroundColor: "rgba(15, 23, 42, 0.65)",
+        backdropFilter: "blur(4px)",
+        zIndex: 1060,
+      }}
+    >
+      <div className="modal-dialog modal-dialog-centered modal-lg">
+        <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          {/* Modal Header */}
+          <div className="modal-header bg-light py-3 px-4 border-bottom">
+            <div className="d-flex align-items-center gap-2">
+              <div
+                className="bg-primary-subtle text-primary p-2 rounded-3 d-flex align-items-center justify-content-center"
+                style={{ width: "40px", height: "40px" }}
+              >
+                <i className="fa-solid fa-box-open fs-5"></i>
               </div>
-              <button
-                type="button"
-                className="btn-close btn-close-white position-absolute end-0 me-3"
-                aria-label="Close"
-                onClick={handleModalClose}
-              ></button>
+              <div>
+                <h5 className="modal-title fw-bold text-dark mb-0">
+                  Add New Product
+                </h5>
+                <span className="text-muted extra-small">
+                  Add a new item to your inventory catalog
+                </span>
+              </div>
             </div>
+            <button
+              type="button"
+              className="btn-close shadow-none"
+              onClick={handleModalClose}
+              disabled={loading}
+              aria-label="Close"
+            ></button>
+          </div>
 
+          <form onSubmit={handleSubmit}>
             {/* Modal Body */}
-            <div className="modal-body p-4 p-sm-5 bg-white">
+            <div className="modal-body p-4 bg-white">
               {/* Alert Feedback */}
               {success && (
                 <div
-                  className="alert alert-success py-2 small rounded-2 mb-3"
+                  className="alert alert-success d-flex align-items-center gap-2 py-3 px-3 rounded-3 border-0 shadow-sm mb-4"
                   role="alert"
                 >
-                  <i className="fa-solid fa-circle-check me-2"></i>
-                  {success}
-                </div>
-              )}
-              {error && (
-                <div
-                  className="alert alert-danger py-2 small rounded-2 mb-3"
-                  role="alert"
-                >
-                  <i className="fa-solid fa-circle-exclamation me-2"></i>
-                  {error}
+                  <i className="fa-solid fa-circle-check fs-5"></i>
+                  <div className="fw-medium small">{success}</div>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit}>
-                {/* Image Upload Field */}
-                <div className="mb-3">
+              {error && (
+                <div
+                  className="alert alert-danger d-flex align-items-center gap-2 py-3 px-3 rounded-3 border-0 shadow-sm mb-4"
+                  role="alert"
+                >
+                  <i className="fa-solid fa-circle-exclamation fs-5"></i>
+                  <div className="fw-medium small">{error}</div>
+                </div>
+              )}
+
+              {/* Product Name & Category Row */}
+              <div className="row g-3 mb-3">
+                {/* Product Name */}
+                <div className="col-md-6">
                   <label
-                    htmlFor="image"
-                    className="form-label small fw-semibold text-secondary"
+                    htmlFor="name"
+                    className="form-label text-muted small fw-medium mb-2"
                   >
-                    Product Image
+                    Product Name <span className="text-danger">*</span>
                   </label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3">
+                      <i className="fa-solid fa-tag"></i>
+                    </span>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      placeholder="e.g. Wireless Gaming Mouse"
+                      value={productDetails.name}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                      className="form-control border-start-0 rounded-end-3 py-2 text-dark small shadow-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Category Selection Dropdown */}
+                <div className="col-md-6">
+                  <label
+                    htmlFor="category_id"
+                    className="form-label text-muted small fw-medium mb-2"
+                  >
+                    Category <span className="text-danger">*</span>
+                  </label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3">
+                      <i className="fa-solid fa-layer-group"></i>
+                    </span>
+                    <select
+                      id="category_id"
+                      name="category_id"
+                      value={productDetails.category_id}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                      className="form-select border-start-0 rounded-end-3 py-2 text-dark small shadow-none"
+                    >
+                      <option value="">Select a Category</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Upload Field & Preview */}
+              <div className="mb-3">
+                <label
+                  htmlFor="image"
+                  className="form-label text-muted small fw-medium mb-2"
+                >
+                  Product Image <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3">
+                    <i className="fa-solid fa-image"></i>
+                  </span>
                   <input
                     type="file"
                     id="image"
@@ -242,75 +311,45 @@ const AddProduct = ({ show, handleClose, onSuccess }) => {
                     accept="image/*"
                     required
                     onChange={handleProductImage}
-                    className="form-control form-control-lg fs-6 py-2 rounded-3"
+                    disabled={loading}
+                    className="form-control border-start-0 rounded-end-3 py-2 text-dark small shadow-none"
                   />
+                </div>
 
-                  {/* Image Preview Box */}
-                  {imagePreview && (
-                    <div className="mt-3 text-center bg-light p-2 rounded-3 border">
-                      <img
-                        src={imagePreview}
-                        alt="Product Preview"
-                        className="img-fluid rounded-2 object-fit-cover"
-                        style={{ maxHeight: "150px" }}
-                      />
+                {/* Image Preview Box */}
+                {imagePreview && (
+                  <div className="mt-3 p-2 bg-light border rounded-3 d-flex align-items-center gap-3">
+                    <img
+                      src={imagePreview}
+                      alt="Product Preview"
+                      className="rounded-2 object-fit-cover shadow-sm"
+                      style={{ width: "70px", height: "70px" }}
+                    />
+                    <div>
+                      <div className="extra-small text-muted fw-semibold uppercase mb-1">
+                        Selected Preview
+                      </div>
+                      <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                        <i className="fa-solid fa-circle-check me-1"></i> Ready to
+                        upload
+                      </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+              </div>
 
-                {/* Product Name */}
-                <div className="mb-3">
-                  <label
-                    htmlFor="name"
-                    className="form-label small fw-semibold text-secondary"
-                  >
-                    Product Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="e.g. Wireless Gaming Mouse"
-                    value={productDetails.name}
-                    onChange={handleChange}
-                    required
-                    className="form-control form-control-lg fs-6 py-2 rounded-3"
-                  />
-                </div>
-
-                {/* Category Selection Dropdown */}
-                <div className="mb-3">
-                  <label
-                    htmlFor="category_id"
-                    className="form-label small fw-semibold text-secondary"
-                  >
-                    Category
-                  </label>
-                  <select
-                    id="category_id"
-                    name="category_id"
-                    value={productDetails.category_id}
-                    onChange={handleChange}
-                    required
-                    className="form-select form-select-lg fs-6 py-2 rounded-3"
-                  >
-                    <option value="">Select a Category</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Product Description */}
-                <div className="mb-3">
-                  <label
-                    htmlFor="description"
-                    className="form-label small fw-semibold text-secondary"
-                  >
-                    Description
-                  </label>
+              {/* Product Description */}
+              <div className="mb-3">
+                <label
+                  htmlFor="description"
+                  className="form-label text-muted small fw-medium mb-2"
+                >
+                  Description <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3 align-items-start pt-2">
+                    <i className="fa-solid fa-align-left"></i>
+                  </span>
                   <textarea
                     id="description"
                     name="description"
@@ -319,20 +358,26 @@ const AddProduct = ({ show, handleClose, onSuccess }) => {
                     value={productDetails.description}
                     onChange={handleChange}
                     required
-                    className="form-control fs-6 p-3 rounded-3"
+                    disabled={loading}
+                    className="form-control border-start-0 rounded-end-3 py-2 text-dark small shadow-none"
                   />
                 </div>
+              </div>
 
-                {/* Quantity & Unit Price Row */}
-                <div className="row g-3 mb-3">
-                  {/* Quantity */}
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="quantity"
-                      className="form-label small fw-semibold text-secondary"
-                    >
-                      Quantity
-                    </label>
+              {/* Quantity & Unit Price Row */}
+              <div className="row g-3 mb-3">
+                {/* Quantity */}
+                <div className="col-md-6">
+                  <label
+                    htmlFor="quantity"
+                    className="form-label text-muted small fw-medium mb-2"
+                  >
+                    Quantity <span className="text-danger">*</span>
+                  </label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3">
+                      <i className="fa-solid fa-boxes-stacked"></i>
+                    </span>
                     <input
                       type="number"
                       id="quantity"
@@ -342,85 +387,92 @@ const AddProduct = ({ show, handleClose, onSuccess }) => {
                       value={productDetails.quantity}
                       onChange={handleChange}
                       required
-                      className="form-control form-control-lg fs-6 py-2 rounded-3"
+                      disabled={loading}
+                      className="form-control border-start-0 rounded-end-3 py-2 text-dark small shadow-none"
                     />
-                  </div>
-
-                  {/* Unit Price */}
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="unit_price"
-                      className="form-label small fw-semibold text-secondary"
-                    >
-                      Unit Price
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 fs-6">
-                        Ksh
-                      </span>
-                      <input
-                        type="number"
-                        id="unit_price"
-                        name="unit_price"
-                        min="0"
-                        placeholder="0.00"
-                        value={productDetails.unit_price}
-                        onChange={handleChange}
-                        required
-                        className="form-control form-control-lg fs-6 py-2 rounded-end-3"
-                      />
-                    </div>
                   </div>
                 </div>
 
-                {/* Calculated Total (Read-only) */}
-                <div className="mb-4">
-                  <label className="form-label small fw-semibold text-secondary">
-                    Total Estimated Value
+                {/* Unit Price */}
+                <div className="col-md-6">
+                  <label
+                    htmlFor="unit_price"
+                    className="form-label text-muted small fw-medium mb-2"
+                  >
+                    Unit Price <span className="text-danger">*</span>
                   </label>
                   <div className="input-group">
-                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 fs-6">
+                    <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3 small fw-semibold">
                       Ksh
                     </span>
                     <input
-                      type="text"
-                      className="form-control form-control-lg fs-6 py-2 bg-light fw-bold text-primary rounded-end-3"
-                      value={Number(calculatedTotal).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                      readOnly
+                      type="number"
+                      id="unit_price"
+                      name="unit_price"
+                      min="0"
+                      placeholder="0.00"
+                      value={productDetails.unit_price}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                      className="form-control border-start-0 rounded-end-3 py-2 text-dark small shadow-none"
                     />
                   </div>
                 </div>
+              </div>
 
-                {/* Action Buttons */}
-                <div className="d-grid gap-2">
-                  <button
-                    type="submit"
-                    className="btn btn-outline-dark btn-lg rounded-3 fs-6 fw-semibold py-2 shadow-sm"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                        Saving Product...
-                      </>
-                    ) : (
-                      "Add Product"
-                    )}
-                  </button>
+              {/* Calculated Total (Read-only) */}
+              <div className="mb-2">
+                <label className="form-label text-muted small fw-medium mb-2">
+                  Total Estimated Value
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light text-muted border-end-0 rounded-start-3 px-3">
+                    <i className="fa-solid fa-calculator"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-start-0 rounded-end-3 py-2 bg-light fw-bold text-primary small shadow-none"
+                    value={`Ksh ${Number(calculatedTotal).toLocaleString(
+                      undefined,
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}`}
+                    readOnly
+                  />
                 </div>
-              </form>
+              </div>
             </div>
-          </div>
+
+            {/* Modal Footer */}
+            <div className="modal-footer bg-light p-3 border-top gap-2">
+              
+              <button
+                type="submit"
+                className="btn btn-primary rounded-3 px-4 py-2 flex-grow-1 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                    ></span>
+                    Saving Product...
+                  </>
+                ) : (
+                  <>
+                    Add Product
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -134,60 +134,67 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
 
   return (
     <div
-      className="modal show d-block"
+      className="modal fade show d-block"
       tabIndex="-1"
-      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      role="dialog"
+      aria-modal="true"
+      style={{
+        backgroundColor: "rgba(15, 23, 42, 0.6)",
+        backdropFilter: "blur(4px)",
+      }}
     >
       <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content shadow rounded-3 border-0">
+        <div className="modal-content shadow-lg border-0 rounded-3">
           {/* Modal Header */}
-          <div className="modal-header border-bottom py-3">
-            <h5 className="modal-title fw-bold text-dark">
-              Edit Product #{product.id}
-            </h5>
+          <div className="modal-header bg-light">
+            <div className="d-flex align-items-center gap-2">
+              <h5 className="modal-title fw-bold mb-0">Edit Product</h5>
+              <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                #{product.id}
+              </span>
+            </div>
             <button
               type="button"
               className="btn-close"
               onClick={handleClose}
               disabled={submitting}
+              aria-label="Close"
             ></button>
           </div>
 
           {/* Modal Body */}
           <div className="modal-body p-4">
-            
             {/* Feedback Alerts */}
             {success && (
               <div
-                className="alert alert-success py-2 small rounded-2 mb-3"
+                className="alert alert-success d-flex align-items-center"
                 role="alert"
               >
-                <i className="fa-solid fa-circle-check me-2"></i>
-                {success}
+                <i className="bi bi-check-circle-fill me-2"></i>
+                <div>{success}</div>
               </div>
             )}
+
             {error && (
               <div
-                className="alert alert-danger py-2 small rounded-2 mb-3"
+                className="alert alert-danger d-flex align-items-center"
                 role="alert"
               >
-                <i className="fa-solid fa-circle-exclamation me-2"></i>
-                {error}
+                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{error}</div>
               </div>
             )}
 
             <form onSubmit={handleSubmit}>
-              {/* Product Name & Slug Row */}
-              <div className="row mb-3">
+              {/* Name & Slug Grid */}
+              <div className="row g-3 mb-3">
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold small text-secondary">
+                  <label className="form-label small fw-bold text-uppercase text-secondary">
                     Product Name
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${
-                      validationErrors.name ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${validationErrors.name ? "is-invalid" : ""}`}
                     value={name}
                     onChange={handleNameChange}
                     required
@@ -200,14 +207,12 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 </div>
 
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold small text-secondary">
+                  <label className="form-label small fw-bold text-uppercase text-secondary">
                     Slug
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${
-                      validationErrors.slug ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${validationErrors.slug ? "is-invalid" : ""}`}
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     required
@@ -222,14 +227,12 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
 
               {/* Description */}
               <div className="mb-3">
-                <label className="form-label fw-semibold small text-secondary">
+                <label className="form-label small fw-bold text-uppercase text-secondary">
                   Description
                 </label>
                 <textarea
-                  className={`form-control ${
-                    validationErrors.description ? "is-invalid" : ""
-                  }`}
                   rows="3"
+                  className={`form-control ${validationErrors.description ? "is-invalid" : ""}`}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
@@ -241,18 +244,16 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 )}
               </div>
 
-              {/* Quantity & Price Row */}
-              <div className="row mb-3">
+              {/* Quantity & Price Grid */}
+              <div className="row g-3 mb-3">
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold small text-secondary">
+                  <label className="form-label small fw-bold text-uppercase text-secondary">
                     Quantity
                   </label>
                   <input
                     type="number"
                     min="0"
-                    className={`form-control ${
-                      validationErrors.quantity ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${validationErrors.quantity ? "is-invalid" : ""}`}
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     required
@@ -265,16 +266,14 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 </div>
 
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold small text-secondary">
-                    Unit Price (Ksh)
+                  <label className="form-label small fw-bold text-uppercase text-secondary">
+                    Unit Price
                   </label>
                   <input
                     type="number"
                     min="0"
                     step="0.01"
-                    className={`form-control ${
-                      validationErrors.unit_price ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${validationErrors.unit_price ? "is-invalid" : ""}`}
                     value={unitPrice}
                     onChange={(e) => setUnitPrice(e.target.value)}
                     required
@@ -287,44 +286,49 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
                 </div>
               </div>
 
-              {/* Image Input & Preview */}
-              <div className="mb-3">
-                <label className="form-label fw-semibold small text-secondary">
+              {/* Product Image & Preview */}
+              <div className="mb-4">
+                <label className="form-label small fw-bold text-uppercase text-secondary">
                   Product Image
                 </label>
-                <input
-                  type="file"
-                  className={`form-control ${
-                    validationErrors.image ? "is-invalid" : ""
-                  }`}
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-                {validationErrors.image && (
-                  <div className="invalid-feedback">
-                    {validationErrors.image[0]}
-                  </div>
-                )}
-
-                {previewImage && (
-                  <div className="mt-3">
-                    <p className="text-muted small mb-1">Preview:</p>
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="rounded border object-fit-cover"
-                      style={{ width: "80px", height: "80px" }}
+                <div className="card p-3 bg-light border">
+                  <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className={`form-control ${validationErrors.image ? "is-invalid" : ""}`}
                     />
+
+                    {previewImage && (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={previewImage}
+                          alt="Preview"
+                          className="img-thumbnail"
+                          style={{
+                            width: "64px",
+                            height: "64px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
-                )}
+                  {validationErrors.image && (
+                    <div className="text-danger small mt-1">
+                      {validationErrors.image[0]}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="modal-footer px-0 pb-0 pt-3 border-top d-flex justify-content-end gap-2">
+              {/* Footer Action Buttons */}
+              <div className="justify-content-end align-items-center gap-2 pt-3 border-top">
                 <button
                   type="submit"
-                  className="btn btn-outline-dark rounded-2 fw-semibold px-4 w-100"
                   disabled={submitting}
+                  className="btn btn-primary px-4 w-100"
                 >
                   {submitting ? (
                     <>
