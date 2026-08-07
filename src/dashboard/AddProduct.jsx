@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,10 +8,14 @@ const AddProduct = () => {
   const { token } = useStateContext();
   const navigate = useNavigate();
 
-  //* State to hold product details
+  //* State to hold category list fetched from API
+  const [categories, setCategories] = useState([]);
+
+  //* State to hold product details (added category_id)
   const [productDetails, setProductDetails] = useState({
     name: "",
     description: "",
+    category_id: "",
     quantity: "",
     unit_price: "",
   });
@@ -24,6 +28,28 @@ const AddProduct = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  //* Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/categories", {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setCategories(data.data || data);
+        }
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+      }
+    };
+
+    fetchCategories();
+  }, [token]);
 
   //* Helper function to generate a slug from the product name
   const createSlug = (text) => {
@@ -41,7 +67,7 @@ const AddProduct = () => {
     (parseFloat(productDetails.unit_price) || 0)
   ).toFixed(2);
 
-  //* Handle text input change
+  //* Handle text input & select change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductDetails((prev) => ({ ...prev, [name]: value }));
@@ -72,6 +98,7 @@ const AddProduct = () => {
       formData.append("name", productDetails.name);
       formData.append("slug", createSlug(productDetails.name));
       formData.append("description", productDetails.description);
+      formData.append("category_id", productDetails.category_id);
       formData.append("quantity", productDetails.quantity);
       formData.append("unit_price", productDetails.unit_price);
 
@@ -97,6 +124,7 @@ const AddProduct = () => {
         setProductDetails({
           name: "",
           description: "",
+          category_id: "",
           quantity: "",
           unit_price: "",
         });
@@ -114,17 +142,8 @@ const AddProduct = () => {
         if (data.errors) {
           const firstErrorKey = Object.keys(data.errors)[0];
           setError(data.errors[firstErrorKey][0]);
-
-          setTimeout(() => {
-            setError(null);
-            navigate("/dashboard");
-          }, 3000);
         } else {
           setError(data.message || "Failed to add product.");
-          setTimeout(() => {
-            setError(null);
-            navigate("/dashboard");
-          }, 3000);
         }
       }
     } catch (err) {
@@ -219,6 +238,31 @@ const AddProduct = () => {
                     required
                     className="form-control form-control-lg fs-6 py-2 rounded-3"
                   />
+                </div>
+
+                {/* Category Selection Dropdown */}
+                <div className="mb-3">
+                  <label
+                    htmlFor="category_id"
+                    className="form-label small fw-semibold text-secondary"
+                  >
+                    Category
+                  </label>
+                  <select
+                    id="category_id"
+                    name="category_id"
+                    value={productDetails.category_id}
+                    onChange={handleChange}
+                    required
+                    className="form-select form-select-lg fs-6 py-2 rounded-3"
+                  >
+                    <option value="">Select a Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Product Description */}

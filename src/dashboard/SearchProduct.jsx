@@ -1,9 +1,9 @@
 const SearchProduct = ({ searchTerm, setSearchTerm }) => {
   return (
-    <div className="position-relative" style={{ minWidth: "250px" }}>
+    <div className="position-relative" style={{ minWidth: "300px" }}>
       <input
         type="text"
-        className="form-control form-control-sm pe-4 ps-4 rounded-3"
+        className="form-control form-control-sm pe-4 ps-4 rounded-3 p-2"
         placeholder="Search product by name..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}

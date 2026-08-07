@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DeleteProduct from "./DeleteProduct";
 import SearchProduct from "./SearchProduct";
 import EditProduct from "./EditProduct";
-import Logout from "../authentication/Logout";
 import { useStateContext } from "../context/ContextProvider";
 import Sidebar from "../sidebar/Sidebar";
 
 const Dashboard = () => {
   //* Context state for authentication
   const { token } = useStateContext();
+
+  //* URL Query Parameters (for Category Filter)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
 
   //* State variables
   const [products, setProducts] = useState([]);
@@ -45,11 +48,19 @@ const Dashboard = () => {
       let endpoint = fetchUrl;
 
       if (!endpoint) {
-        endpoint = query.trim()
-          ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(
-              query.trim(),
-            )}`
+        // Base route depending on search term
+        let baseUrl = query.trim()
+          ? `http://127.0.0.1:8000/api/products/search/${encodeURIComponent(query.trim())}`
           : "http://127.0.0.1:8000/api/products";
+
+        const url = new URL(baseUrl);
+
+        // Append category_id query parameter if active
+        if (categoryParam) {
+          url.searchParams.append("category_id", categoryParam);
+        }
+
+        endpoint = url.toString();
       }
 
       const response = await fetch(endpoint, {
@@ -90,16 +101,22 @@ const Dashboard = () => {
     }
   };
 
-  //* Debounce API call when typing in search input
+  //* Re-fetch products when search term, category filter, or auth token changes
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchProducts(searchTerm);
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, token]);
+  }, [searchTerm, categoryParam, token]);
 
-  //* Handle Previous / Next button click
+  //* Clear active category filter
+  const handleClearCategoryFilter = () => {
+    searchParams.delete("category");
+    setSearchParams(searchParams);
+  };
+
+  //* Handle Previous / Next pagination button click
   const handlePageChange = (url) => {
     if (url) {
       fetchProducts(searchTerm, url);
@@ -148,33 +165,28 @@ const Dashboard = () => {
         {/* Header Section */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 gap-3">
           <div>
+            <h4 className="fw-bold text-dark mb-1">Product Inventory</h4>
             <p className="text-muted small mb-0">
               Manage store, view products, or perform updates
             </p>
           </div>
 
-          {/* Search product */}
-          <div className="d-flex align-items-center gap-3">
+          {/* Search field */}
+          <div className="d-flex align-items-center">
             <SearchProduct
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
-
-            {/* Add product */}
-            <Link
-              to="/add"
-              className="btn btn-outline-dark fw-semibold rounded-3 px-3 d-flex align-items-center gap-1"
-              title="Add New Product"
-            >
-              <i className="fa-solid fa-plus"></i>
-            </Link>
           </div>
         </div>
 
         {/* Loading Spinner */}
         {loading && (
           <div className="d-flex justify-content-center align-items-center py-5">
-            <div className="spinner-border text-primary me-2" role="status"></div>
+            <div
+              className="spinner-border text-primary me-2"
+              role="status"
+            ></div>
             <span className="text-muted">Loading product inventory...</span>
           </div>
         )}
@@ -195,8 +207,18 @@ const Dashboard = () => {
             <p className="text-muted fs-5 mb-0">
               {searchTerm
                 ? `No products found matching "${searchTerm}".`
-                : "No products found in the database."}
+                : categoryParam
+                  ? "No products found in this category."
+                  : "No products found in the database."}
             </p>
+            {categoryParam && (
+              <button
+                className="btn btn-sm btn-outline-secondary mt-3 rounded-2"
+                onClick={handleClearCategoryFilter}
+              >
+                Clear Category Filter
+              </button>
+            )}
           </div>
         )}
 
@@ -215,6 +237,7 @@ const Dashboard = () => {
                     </th>
                     <th scope="col">Name</th>
                     <th scope="col">Description</th>
+                    <th scope="col">Category</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Unit Price</th>
                     <th scope="col">Total Price</th>
@@ -268,6 +291,15 @@ const Dashboard = () => {
                           {product.description || "No description provided."}
                         </div>
                       </td>
+
+                      <td>
+                        <div className="fw-semibold text-dark">
+                          {typeof product.category === "object"
+                            ? product.category?.name || "Uncategorized"
+                            : product.category || "Uncategorized"}
+                        </div>
+                      </td>
+
                       <td className="fw-bold text-primary">
                         {Number(product.quantity).toLocaleString()}
                       </td>
