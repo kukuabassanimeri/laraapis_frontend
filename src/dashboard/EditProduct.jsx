@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useStateContext } from "../context/ContextProvider";
 
 const EditProduct = ({ show, handleClose, product, onSuccess }) => {
@@ -156,12 +155,24 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
 
           {/* Modal Body */}
           <div className="modal-body p-4">
+            
             {/* Feedback Alerts */}
-            {error && <div className="alert alert-danger small">{error}</div>}
             {success && (
-              <div className="alert alert-success small">
-                <span className="me-2 fw-bold">✓</span>
+              <div
+                className="alert alert-success py-2 small rounded-2 mb-3"
+                role="alert"
+              >
+                <i className="fa-solid fa-circle-check me-2"></i>
                 {success}
+              </div>
+            )}
+            {error && (
+              <div
+                className="alert alert-danger py-2 small rounded-2 mb-3"
+                role="alert"
+              >
+                <i className="fa-solid fa-circle-exclamation me-2"></i>
+                {error}
               </div>
             )}
 
@@ -312,7 +323,7 @@ const EditProduct = ({ show, handleClose, product, onSuccess }) => {
               <div className="modal-footer px-0 pb-0 pt-3 border-top d-flex justify-content-end gap-2">
                 <button
                   type="submit"
-                  className="btn btn-outline dark rounded-2 fw-semibold px-4 w-100"
+                  className="btn btn-outline-dark rounded-2 fw-semibold px-4 w-100"
                   disabled={submitting}
                 >
                   {submitting ? (

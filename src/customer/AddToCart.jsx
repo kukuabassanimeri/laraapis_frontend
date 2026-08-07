@@ -92,15 +92,13 @@ const AddToCart = ({ product, onClose, onCartUpdate }) => {
 
           {/* Modal Body */}
           <div className="modal-body text-center px-4 py-3">
-            
-            {/* Success message */}
             {success && (
               <div
-                className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4 small"
+                className="alert alert-success py-2 small rounded-2 mb-3"
                 role="alert"
               >
-                <span className="me-2 fw-bold">✓</span>
-                <div>{success}</div>
+                <i className="fa-solid fa-circle-check me-2"></i>
+                {success}
               </div>
             )}
 

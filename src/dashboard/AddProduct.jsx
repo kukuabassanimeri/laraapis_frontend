@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
-import "bootstrap/dist/css/bootstrap.min.css";
 
-const AddProduct = () => {
+const AddProduct = ({ show, handleClose, onSuccess }) => {
   //* Context state for authenticated requests
   const { token } = useStateContext();
-  const navigate = useNavigate();
 
   //* State to hold category list fetched from API
   const [categories, setCategories] = useState([]);
 
-  //* State to hold product details (added category_id)
+  //* State to hold product details
   const [productDetails, setProductDetails] = useState({
     name: "",
     description: "",
@@ -29,8 +26,34 @@ const AddProduct = () => {
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  //* Fetch categories on component mount
+  //* Reset form fields and clean up image memory
+  const resetForm = () => {
+    setProductDetails({
+      name: "",
+      description: "",
+      category_id: "",
+      quantity: "",
+      unit_price: "",
+    });
+    setProductImage(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
+    setError(null);
+    setSuccess(null);
+  };
+
+  //* Close modal & reset form state
+  const handleModalClose = () => {
+    resetForm();
+    handleClose();
+  };
+
+  //* Fetch categories when modal opens
   useEffect(() => {
+    if (!show) return;
+
     const fetchCategories = async () => {
       try {
         const response = await fetch("http://127.0.0.1:8000/api/categories", {
@@ -49,7 +72,7 @@ const AddProduct = () => {
     };
 
     fetchCategories();
-  }, [token]);
+  }, [token, show]);
 
   //* Helper function to generate a slug from the product name
   const createSlug = (text) => {
@@ -120,24 +143,14 @@ const AddProduct = () => {
       if (response.ok) {
         setSuccess("Product successfully added to inventory.");
 
-        //* Reset form state
-        setProductDetails({
-          name: "",
-          description: "",
-          category_id: "",
-          quantity: "",
-          unit_price: "",
-        });
-        setProductImage(null);
-        if (imagePreview) {
-          URL.revokeObjectURL(imagePreview);
-          setImagePreview(null);
+        if (onSuccess) {
+          onSuccess(data);
         }
 
-        //* Redirect to dashboard after brief feedback delay
+        //* Close modal after brief feedback
         setTimeout(() => {
-          navigate("/dashboard");
-        }, 1500);
+          handleModalClose();
+        }, 3000);
       } else {
         if (data.errors) {
           const firstErrorKey = Object.keys(data.errors)[0];
@@ -154,37 +167,62 @@ const AddProduct = () => {
     }
   };
 
+  if (!show) return null;
+
   return (
-    <div className="container min-vh-100 d-flex justify-content-center align-items-center py-5">
-      <div className="row w-100 justify-content-center">
-        <div className="col-12 col-sm-10 col-md-8 col-lg-6">
-          <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-            {/* Header Banner */}
-            <div className="card-header bg-dark text-white text-center py-4 border-0">
-              <h4 className="fw-bold mb-1">Add New Product</h4>
-              <p className="small mb-0 opacity-75">
-                Enter details to add a new item to your inventory catalog
-              </p>
+    <>
+      {/* Modal Backdrop */}
+      <div
+        className="modal-backdrop fade show"
+        style={{ zIndex: 1050 }}
+        onClick={handleModalClose}
+      ></div>
+
+      {/* Modal Dialog */}
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
+        style={{ zIndex: 1055 }}
+        aria-modal="true"
+        role="dialog"
+      >
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            {/* Modal Header */}
+            <div className="modal-header bg-dark text-white py-3 border-0 position-relative">
+              <div className="w-100 text-center">
+                <h5 className="modal-title fw-bold mb-0">Add New Product</h5>
+                <p className="small mb-0 opacity-75">
+                  Enter details to add a new item to the inventory catalog
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn-close btn-close-white position-absolute end-0 me-3"
+                aria-label="Close"
+                onClick={handleModalClose}
+              ></button>
             </div>
 
-            <div className="card-body p-4 p-sm-5 bg-white">
+            {/* Modal Body */}
+            <div className="modal-body p-4 p-sm-5 bg-white">
               {/* Alert Feedback */}
               {success && (
                 <div
-                  className="alert alert-success d-flex align-items-center rounded-3 p-3 mb-4 small"
+                  className="alert alert-success py-2 small rounded-2 mb-3"
                   role="alert"
                 >
-                  <span className="me-2 fw-bold">✓</span>
-                  <div>{success}</div>
+                  <i className="fa-solid fa-circle-check me-2"></i>
+                  {success}
                 </div>
               )}
-
               {error && (
                 <div
-                  className="alert alert-danger d-flex align-items-center rounded-3 p-3 mb-4 small"
+                  className="alert alert-danger py-2 small rounded-2 mb-3"
                   role="alert"
                 >
-                  <div>{error}</div>
+                  <i className="fa-solid fa-circle-exclamation me-2"></i>
+                  {error}
                 </div>
               )}
 
@@ -376,20 +414,13 @@ const AddProduct = () => {
                       "Add Product"
                     )}
                   </button>
-
-                  <Link
-                    to="/dashboard"
-                    className="btn btn-outline-secondary btn-lg rounded-3 fs-6 fw-semibold py-2"
-                  >
-                    Cancel
-                  </Link>
                 </div>
               </form>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

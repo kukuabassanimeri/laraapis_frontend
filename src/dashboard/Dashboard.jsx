@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import DeleteProduct from "./DeleteProduct";
 import SearchProduct from "./SearchProduct";
 import EditProduct from "./EditProduct";

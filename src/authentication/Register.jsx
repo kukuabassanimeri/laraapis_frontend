@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 const Register = () => {
   //* Access global context setters
@@ -101,10 +100,11 @@ const Register = () => {
               {/* Alert Feedback */}
               {error && (
                 <div
-                  className="alert alert-danger d-flex align-items-center rounded-3 p-2 mb-4 small"
+                  className="alert alert-danger py-2 small rounded-2 mb-3"
                   role="alert"
                 >
-                  <div>{error}</div>
+                  <i className="fa-solid fa-circle-exclamation me-2"></i>
+                  {error}
                 </div>
               )}
 

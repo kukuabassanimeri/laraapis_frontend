@@ -69,14 +69,22 @@ const DeleteProduct = ({ show, handleClose, product, onSuccess }) => {
       </Modal.Header>
 
       <Modal.Body className="py-3">
-        {error && (
-          <div className="alert alert-danger py-2 mb-3 small">{error}</div>
-        )}
-
         {success && (
-          <div className="alert alert-success py-2 mb-3 small">
-            <span className="me-2 fw-bold">✓</span>
+          <div
+            className="alert alert-success py-2 small rounded-2 mb-3"
+            role="alert"
+          >
+            <i className="fa-solid fa-circle-check me-2"></i>
             {success}
+          </div>
+        )}
+        {error && (
+          <div
+            className="alert alert-danger py-2 small rounded-2 mb-3"
+            role="alert"
+          >
+            <i className="fa-solid fa-circle-exclamation me-2"></i>
+            {error}
           </div>
         )}
 
