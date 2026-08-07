@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import SearchProduct from "../dashboard/SearchProduct";
 import AddToCart from "./AddToCart";
-import Cart from "./Cart"; // Import Cart component
+import Cart from "./Cart";
 import Footer from "../components/Footer";
 
 const AllProduct = () => {
@@ -129,15 +128,22 @@ const AllProduct = () => {
         {/* Loading Spinner */}
         {loading && (
           <div className="d-flex justify-content-center align-items-center py-5">
-            <div className="spinner-border text-primary me-2" role="status"></div>
+            <div
+              className="spinner-border text-primary me-2"
+              role="status"
+            ></div>
             <span className="text-muted">Loading products...</span>
           </div>
         )}
 
         {/* Error Alert */}
         {error && (
-          <div className="alert alert-danger d-flex align-items-center" role="alert">
-            <div>{error}</div>
+          <div
+            className="alert alert-danger py-2 small rounded-2 mb-3"
+            role="alert"
+          >
+            <i className="fa-solid fa-circle-exclamation me-2"></i>
+            {error}
           </div>
         )}
 
@@ -159,7 +165,10 @@ const AllProduct = () => {
               const imageUrl = getImageUrl(product.image);
 
               return (
-                <div key={product.id} className="col d-flex align-items-stretch">
+                <div
+                  key={product.id}
+                  className="col d-flex align-items-stretch"
+                >
                   <div className="card h-100 w-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column">
                     <div
                       className="position-relative bg-light d-flex align-items-center justify-content-center overflow-hidden"
@@ -210,18 +219,14 @@ const AllProduct = () => {
 
                       <div className="pt-2 border-top d-flex align-items-center justify-content-between">
                         <div>
-                          <span
-                            className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}
-                          >
-                            Price
-                          </span>
+                          <span className="d-block">Price</span>
                           <span className="fw-bold text-success fs-6">
-                            Ksh {Number(product.unit_price || 0).toLocaleString()}
+                            Ksh{" "}
+                            {Number(product.unit_price || 0).toLocaleString()}
                           </span>
                         </div>
                         <button
-                          className="btn btn-sm btn-outline-primary rounded-2 px-2 py-1"
+                          className="btn btn-sm btn-outline-dark rounded-2 px-2 py-1"
                           onClick={() => setSelectedProduct(product)}
                         >
                           Add

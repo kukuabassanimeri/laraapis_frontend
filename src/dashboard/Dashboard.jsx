@@ -54,7 +54,6 @@ const Dashboard = () => {
 
         const url = new URL(baseUrl);
 
-        // Append category_id query parameter if active
         if (categoryParam) {
           url.searchParams.append("category_id", categoryParam);
         }
@@ -299,13 +298,13 @@ const Dashboard = () => {
                         </div>
                       </td>
 
-                      <td className="fw-bold text-primary">
+                      <td className="fw-bold text-success">
                         {Number(product.quantity).toLocaleString()}
                       </td>
-                      <td className="fw-bold text-primary">
+                      <td className="fw-bold text-success">
                         {Number(product.unit_price).toLocaleString()}.00
                       </td>
-                      <td className="fw-bold text-primary">
+                      <td className="fw-bold text-success">
                         {Number(product.total_price).toLocaleString()}.00
                       </td>
                       <td>

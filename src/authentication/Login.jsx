@@ -86,16 +86,6 @@ const Login = () => {
             </div>
 
             <div className="card-body p-4 p-sm-5 bg-white">
-              {/* Alert Feedback */}
-              {success && (
-                <div
-                  className="alert alert-success py-2 small rounded-2 mb-3"
-                  role="alert"
-                >
-                  <i className="fa-solid fa-circle-check me-2"></i>
-                  {success}
-                </div>
-              )}
               {error && (
                 <div
                   className="alert alert-danger py-2 small rounded-2 mb-3"
